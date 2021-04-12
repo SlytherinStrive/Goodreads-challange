@@ -1,3 +1,5 @@
+#importing the main libraries
+
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -27,21 +29,24 @@ def get_author(page_soup):
         return author
     except:
         return np.nan
-
+## Function to get the book title
 def get_title(page_soup):
     try:
         title = page_soup.find('h1', id="bookTitle").get_text().strip()
         return title
     except:
         return np.nan
+
+## Function to get the number of pages
 def get_number_of_pages(page_soup):
+    # Missing data probelem
     try:
         number_of_pages_unclean = page_soup.find('span', itemprop="numberOfPages").get_text()
         number_of_pages = int("".join([char for char in number_of_pages_unclean if char.isnumeric()]))
         return number_of_pages
     except:
         return np.nan
-
+# Number of ratings
 def get_number_of_ratings(page_soup):
     try:
         number_of_ratings_unclean = page_soup.find('meta', itemprop="ratingCount")
@@ -49,7 +54,7 @@ def get_number_of_ratings(page_soup):
         return number_of_ratings
     except:
         return np.nan
-
+# First publication year
 def get_first_published(page_soup):
     try:
         details_section = page_soup.find('div', id="details")
@@ -63,7 +68,7 @@ def get_first_published(page_soup):
     except:
         return np.nan
 
-
+# Is the book is part of series (True/False)
 def get_is_series(page_soup):
     try:
         series_section = page_soup.find('h2', id="bookSeries")
@@ -79,7 +84,7 @@ def get_is_series(page_soup):
     except:
         return np.nan
 
-
+# List of awards recieved
 def get_awards(page_soup):
     try:
         awards_section = page_soup.find('div', itemprop="awards")
@@ -89,7 +94,7 @@ def get_awards(page_soup):
         return str_main_awards
     except:
         return np.nan
-
+# Genre of the book
 def get_genres(page_soup):
     try:
         genre_list_unclean = page_soup.find_all('a', class_="actionLinkLite bookPageGenreLink")
@@ -98,7 +103,7 @@ def get_genres(page_soup):
         return str_genre_list
     except:
         return np.nan
-
+# Place (Setting)
 def get_place(page_soup):
     try:
         get_place=page_soup.select('a[href*="/places"]')
@@ -108,7 +113,7 @@ def get_place(page_soup):
         return ", ".join(place)
     except:
         return np.nan
-
+# Getting number of reviews
 def get_num_reviews(page_soup):
     try:
         get_num_unclean=page_soup.find('meta',itemprop="reviewCount")
@@ -116,14 +121,14 @@ def get_num_reviews(page_soup):
         return get_num_reviews
     except:
         return np.nan
-
+#Getting average score
 def get_avg(page_soup):
     try:
         get_avg=float(page_soup.find('span',itemprop="ratingValue").get_text())
         return get_avg
     except:
         return np.nan
-
+# Creation of the dictionary
 def get_all_books(list_of_urls):
     pd_data =[]
     for book_url in list_of_urls[0:10]:
@@ -157,13 +162,13 @@ def get_all_books(list_of_urls):
         pd_data.append(a_book)
     return pd_data
 
-
+# Main scaper function
 def main_app():
     list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
     get_book_data = get_all_books(list_of_urls)
     return get_book_data
 
-
+# Debugger function
 def debugger_help(book_url):
     request = requests.get(book_url)
     page_soup = BeautifulSoup(request.content,'html.parser')
