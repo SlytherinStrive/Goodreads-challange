@@ -126,7 +126,7 @@ def get_avg(page_soup):
 
 def get_all_books(list_of_urls):
     pd_data =[]
-    for book_url in list_of_urls[0:10]:
+    for book_url in list_of_urls[0:100]:
         print(f"Working on url: {book_url}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
@@ -190,7 +190,7 @@ def merge_data_dicts(list_of_dictionaries):
 books = main_app()
 df = pd.DataFrame(merge_data_dicts(books))
 
-df.to_csv('scraped_10_movies.csv', index = False, header=True)
+df.to_csv('scraped_100_movies.csv', index = False, header=True)
 
 
 
