@@ -18,36 +18,26 @@ def hundred_link_grabber(all_books_url):
 hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
 #############################################################################
 ## Functions for getting data from all books
-def get_author(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_author(page_soup):
     author = page_soup.find('a', class_="authorName").get_text().strip()
     ## Returns the author from the page
     return author
 
-def get_title(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_title(page_soup):
     title = page_soup.find('h1', id="bookTitle").get_text().strip()
     return title
 
-def get_number_of_pages(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_number_of_pages(page_soup):
     number_of_pages_unclean = page_soup.find('span', itemprop="numberOfPages").get_text()
     number_of_pages = int("".join([char for char in number_of_pages_unclean if char.isnumeric()]))
     return number_of_pages
 
-def get_number_of_ratings(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_number_of_ratings(page_soup):
     number_of_ratings_unclean = page_soup.find('meta', itemprop="ratingCount")
     number_of_ratings = int(number_of_ratings_unclean['content'])
     return number_of_ratings
 
-def get_first_published(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_first_published(page_soup):
     details_section = page_soup.find('div', id="details")
     first_published_unclean = details_section.find("nobr", class_="greyText")
     if first_published_unclean != None:
@@ -57,9 +47,7 @@ def get_first_published(page_url):
         return None
     return first_published
 
-def get_is_series(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_is_series(page_soup):
     series_section = page_soup.find('h2', id="bookSeries")
     if series_section!= None:
         section_text = series_section.find('a').get_text()
@@ -70,62 +58,54 @@ def get_is_series(page_url):
     else:
         return np.nan
 
-def get_awards(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_awards(page_soup):
     awards_section = page_soup.find('div', itemprop="awards")
     awards = awards_section.find_all('a', class_="award")
     main_awards = [award.get_text().strip() for award in awards]
     str_main_awards = ", ".join(main_awards)
     return str_main_awards
 
-def get_genres(page_url):
-    request = requests.get(page_url)
-    page_soup = BeautifulSoup(request.content, 'html.parser')
+def get_genres(page_soup):
     genre_list_unclean = page_soup.find_all('a', class_="actionLinkLite bookPageGenreLink")
     genre_list = [genre.get_text() for genre in genre_list_unclean]
     str_genre_list = ", ".join(genre_list)
     return str_genre_list
 
-def get_place(page_url):
-    request=requests.get(page_url)
-    page_soup=BeautifulSoup(request.content,'html.parser')
+def get_place(page_soup):
     get_place=page_soup.select('a[href*="/places"]')
     place=[]
     for x in get_place:
         place.append(x.get_text())
     return ", ".join(place)
 
-def get_num_reviews(page_url):
-    request=requests.get(page_url)
-    page_soup=BeautifulSoup(request.content,'html.parser')
+def get_num_reviews(page_soup):
     get_num_unclean=page_soup.find('meta',itemprop="reviewCount")
     get_num_reviews=int(get_num_unclean['content'])
     return get_num_reviews
 
-def get_avg(page_url):
-    request=requests.get(page_url)
-    page_soup=BeautifulSoup(request.content,'html.parser')
+def get_avg(page_soup):
     get_avg=float(page_soup.find('span',itemprop="ratingValue").get_text())
     return get_avg
 
 def get_all_books(list_of_urls):
     pd_data =[]
     for book_url in list_of_urls:
-        url = book_url
-        title = get_title(book_url)
-        author = get_author(book_url)
-        num_reviews = get_num_reviews(book_url)
-        num_ratings = get_number_of_ratings(book_url)
-        avg_rating = get_avg(book_url)
-        num_pages = get_number_of_pages(book_url)
-        original_publish_year = get_first_published(book_url)
-        series = get_is_series(book_url)
-        genres = get_genres(book_url)
-        awards = get_awards(book_url)
-        place = get_place(book_url)
+        print(f"Working on url: {book_url}")
+        request = requests.get(book_url)
+        page_soup = BeautifulSoup(request.content,'html.parser')
+        title = get_title(page_soup)
+        author = get_author(page_soup)
+        num_reviews = get_num_reviews(page_soup)
+        num_ratings = get_number_of_ratings(page_soup)
+        avg_rating = get_avg(page_soup)
+        num_pages = get_number_of_pages(page_soup)
+        original_publish_year = get_first_published(page_soup)
+        series = get_is_series(page_soup)
+        genres = get_genres(page_soup)
+        awards = get_awards(page_soup)
+        place = get_place(page_soup)
         a_book = {
-            "url": url,
+            "url": book_url,
             "title":title,
             "author" :author,
             "avg_rating": avg_rating,
@@ -146,4 +126,5 @@ def main_app():
     get_book_data = get_all_books(list_of_urls)
     return get_book_data
 
-main_app()
+x = main_app()
+print(len(x))
