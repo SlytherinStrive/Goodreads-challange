@@ -3,8 +3,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
 
-
-##### Get links from the list of books
+#############################################################################
+## Get links from the list of books
 def hundred_link_grabber(all_books_url):
     page = requests.get(url=all_books_url)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -26,6 +26,7 @@ def get_author(page_soup):
         ## Returns the author from the page
         return author
     except:
+        print("Oh no get_author failed")
         return np.nan
 
 def get_title(page_soup):
@@ -33,13 +34,16 @@ def get_title(page_soup):
         title = page_soup.find('h1', id="bookTitle").get_text().strip()
         return title
     except:
+        print("Oh no get_title failed")
         return np.nan
+
 def get_number_of_pages(page_soup):
     try:
         number_of_pages_unclean = page_soup.find('span', itemprop="numberOfPages").get_text()
         number_of_pages = int("".join([char for char in number_of_pages_unclean if char.isnumeric()]))
         return number_of_pages
     except:
+        print("Oh no get_number_of_pages failed")
         return np.nan
 
 def get_number_of_ratings(page_soup):
@@ -48,7 +52,9 @@ def get_number_of_ratings(page_soup):
         number_of_ratings = int(number_of_ratings_unclean['content'])
         return number_of_ratings
     except:
+        print("Oh no get_number_of_ratings failed")
         return np.nan
+
 
 def get_first_published(page_soup):
     try:
@@ -61,6 +67,7 @@ def get_first_published(page_soup):
             return None
         return first_published
     except:
+        print("Oh no get_first_published failed")
         return np.nan
 
 
@@ -77,6 +84,7 @@ def get_is_series(page_soup):
         else:
             return np.nan
     except:
+        print("Oh no get_is_series failed")
         return np.nan
 
 
@@ -88,6 +96,7 @@ def get_awards(page_soup):
         str_main_awards = ", ".join(main_awards)
         return str_main_awards
     except:
+        print("Oh no get_awards failed")
         return np.nan
 
 def get_genres(page_soup):
@@ -97,6 +106,7 @@ def get_genres(page_soup):
         str_genre_list = ", ".join(genre_list)
         return str_genre_list
     except:
+        print("Oh no get_genres failed")
         return np.nan
 
 def get_place(page_soup):
@@ -107,6 +117,7 @@ def get_place(page_soup):
             place.append(x.get_text())
         return ", ".join(place)
     except:
+        print("Oh no get_place failed")
         return np.nan
 
 def get_num_reviews(page_soup):
@@ -115,6 +126,7 @@ def get_num_reviews(page_soup):
         get_num_reviews=int(get_num_unclean['content'])
         return get_num_reviews
     except:
+        print("Oh no get_num_reviews failed")
         return np.nan
 
 def get_avg(page_soup):
@@ -122,11 +134,12 @@ def get_avg(page_soup):
         get_avg=float(page_soup.find('span',itemprop="ratingValue").get_text())
         return get_avg
     except:
+        print("Oh no get avg failed")
         return np.nan
 
 def get_all_books(list_of_urls):
     pd_data =[]
-    for book_url in list_of_urls[0:100]:
+    for book_url in list_of_urls:
         print(f"Working on url: {book_url}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
@@ -156,10 +169,21 @@ def get_all_books(list_of_urls):
             "place" : [place]}
         pd_data.append(a_book)
     return pd_data
+#############################################################################
+## Functions for getting all data
 
-
-def main_app():
-    list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+def main_app(quantity):
+    """
+    quantity is sets of 100 books
+    """
+    all_urls =[]
+    if quantity < 55:
+        for i in range(quantity):
+            list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
+            get_url_data = hundred_link_grabber(list_url)
+            all_urls.append(get_url_data)
+    else:
+        return "Selected too many books"
     get_book_data = get_all_books(list_of_urls)
     return get_book_data
 
@@ -187,7 +211,7 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-books = main_app()
+books = main_app(4)
 df = pd.DataFrame(merge_data_dicts(books))
 
 df.to_csv('scraped_100_movies.csv', index = False, header=True)
