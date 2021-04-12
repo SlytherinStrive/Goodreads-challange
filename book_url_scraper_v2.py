@@ -22,6 +22,8 @@ def hundred_link_grabber(all_books_url):
 
 #############################################################################
 ## Functions for getting data from all books
+
+## Function to get the author
 def get_author(page_soup):
     try:
         author = page_soup.find('a', class_="authorName").get_text().strip()
@@ -30,6 +32,7 @@ def get_author(page_soup):
     except:
         print("Oh no get_author failed")
         return np.nan
+
 ## Function to get the book title
 def get_title(page_soup):
     try:
@@ -48,6 +51,7 @@ def get_number_of_pages(page_soup):
     except:
         print("Oh no get_number_of_pages failed")
         return np.nan
+
 # Number of ratings
 def get_number_of_ratings(page_soup):
     try:
@@ -57,6 +61,7 @@ def get_number_of_ratings(page_soup):
     except:
         print("Oh no get_number_of_ratings failed")
         return np.nan
+
 # First publication year
 def get_first_published(page_soup):
     try:
@@ -100,6 +105,7 @@ def get_awards(page_soup):
     except:
         print("Oh no get_awards failed")
         return np.nan
+
 # Genre of the book
 def get_genres(page_soup):
     try:
@@ -110,6 +116,7 @@ def get_genres(page_soup):
     except:
         print("Oh no get_genres failed")
         return np.nan
+
 # Place (Setting)
 def get_place(page_soup):
     try:
@@ -121,6 +128,7 @@ def get_place(page_soup):
     except:
         print("Oh no get_place failed")
         return np.nan
+
 # Getting number of reviews
 def get_num_reviews(page_soup):
     try:
@@ -130,6 +138,7 @@ def get_num_reviews(page_soup):
     except:
         print("Oh no get_num_reviews failed")
         return np.nan
+
 #Getting average score
 def get_avg(page_soup):
     try:
@@ -138,6 +147,7 @@ def get_avg(page_soup):
     except:
         print("Oh no get avg failed")
         return np.nan
+
 # Creation of the dictionary
 def get_all_books(list_of_urls):
     pd_data =[]
@@ -171,9 +181,9 @@ def get_all_books(list_of_urls):
             "place" : [place]}
         pd_data.append(a_book)
     return pd_data
+
 #############################################################################
 ## Functions for getting all data
-
 def main_app(quantity):
     """
     quantity is sets of 100 books
@@ -195,28 +205,24 @@ def debugger_help(book_url):
     page_soup = BeautifulSoup(request.content,'html.parser')
     return page_soup
 
+# Used for merging all the book dictionaries into one for easy dataframe creation
 def merge_data_dicts(list_of_dictionaries):
     all_data = {}
     for dict in list_of_dictionaries:
-        #print(f"working on the dict: {dict}")
         for key, value in dict.items():
-            print(f"Current key {key}, current data{value}")
             if key in all_data.keys():
                 current_data = all_data[key]
-                print(current_data)
                 combined_data = current_data + value
                 all_data[key] = combined_data
             else:
-                #print(False)
                 all_data[key] = value
-        #print(all_data)
     return all_data
 
 
 books = main_app(4)
 df = pd.DataFrame(merge_data_dicts(books))
 
-df.to_csv('scraped_100_movies.csv', index = False, header=True)
+df.to_csv('scraped_alot_of_movies.csv', index = False, header=True)
 
 
 
