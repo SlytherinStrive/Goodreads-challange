@@ -39,10 +39,6 @@ def get_title(page_soup):
         print("Oh no get_title failed")
         return np.nan
 
-<<<<<<< HEAD
-=======
-## Function to get the number of pages
->>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
 def get_number_of_pages(page_soup):
     # Missing data probelem
     try:
@@ -61,12 +57,7 @@ def get_number_of_ratings(page_soup):
     except:
         print("Oh no get_number_of_ratings failed")
         return np.nan
-<<<<<<< HEAD
-
-
-=======
 # First publication year
->>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
 def get_first_published(page_soup):
     try:
         details_section = page_soup.find('div', id="details")
@@ -180,7 +171,6 @@ def get_all_books(list_of_urls):
             "place" : [place]}
         pd_data.append(a_book)
     return pd_data
-<<<<<<< HEAD
 #############################################################################
 ## Functions for getting all data
 
@@ -196,12 +186,6 @@ def main_app(quantity):
             all_urls.append(get_url_data)
     else:
         return "Selected too many books"
-=======
-
-# Main scaper function
-def main_app():
-    list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
->>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
     get_book_data = get_all_books(list_of_urls)
     return get_book_data
 
