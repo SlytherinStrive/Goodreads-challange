@@ -10,12 +10,14 @@ def hundred_link_grabber(all_books_url):
     soup = BeautifulSoup(page.content, 'html.parser')
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
+    len_links = len(final_links)
     ## Returns a list of 100 book links
-    for l in final_links:
-        print(l)
+    # for l in final_links:
+    #     print(l)
+    print(f"Succesfully generated {len_links}")
     return final_links
 
-hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+
 #############################################################################
 ## Functions for getting data from all books
 def get_author(page_soup):
@@ -65,7 +67,6 @@ def get_first_published(page_soup):
 def get_is_series(page_soup):
     try:
         series_section = page_soup.find('h2', id="bookSeries")
-        print(series_section)
         section_text = series_section.find('a')
         if series_section != None:
             check_if_series = series_section.find('a').get_text()
@@ -125,7 +126,7 @@ def get_avg(page_soup):
 
 def get_all_books(list_of_urls):
     pd_data =[]
-    for book_url in list_of_urls:
+    for book_url in list_of_urls[0:2]:
         print(f"Working on url: {book_url}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
@@ -141,18 +142,18 @@ def get_all_books(list_of_urls):
         awards = get_awards(page_soup)
         place = get_place(page_soup)
         a_book = {
-            "url": book_url,
-            "title":title,
-            "author" :author,
-            "avg_rating": avg_rating,
-            "num_reviews" : num_ratings,
-            "num_ratings" : num_ratings,
-            "num_pages" : num_pages,
-            "original_publish_year" : original_publish_year,
-            "series" :series,
-            "genres" : genres,
-            "awards" : awards,
-            "place" : place}
+            "url": [book_url],
+            "title":[title],
+            "author" :[author],
+            "avg_rating": [avg_rating],
+            "num_reviews" : [num_ratings],
+            "num_ratings" : [num_ratings],
+            "num_pages" : [num_pages],
+            "original_publish_year" : [original_publish_year],
+            "series" :[series],
+            "genres" : [genres],
+            "awards" : [awards],
+            "place" : [place]}
         pd_data.append(a_book)
     return pd_data
 
@@ -168,5 +169,31 @@ def debugger_help(book_url):
     page_soup = BeautifulSoup(request.content,'html.parser')
     return page_soup
 
-x = main_app()
-print(len(x))
+def merge_data_dicts(list_of_dictionaries):
+    all_data = {}
+    for dict in list_of_dictionaries:
+        #print(f"working on the dict: {dict}")
+        for key, value in dict.items():
+            print(f"Current key {key}, current data{value}")
+            if key in all_data.keys():
+                current_data = all_data[key]
+                print(current_data)
+                combined_data = current_data + value
+                all_data[key] = combined_data
+            else:
+                #print(False)
+                all_data[key] = value
+        #print(all_data)
+    return all_data
+
+
+books = main_app()
+df = pd.DataFrame(merge_data_dicts(books))
+
+df.to_csv('scraped_10_movies', index = False, header=True)
+
+
+
+# merge_books = merge_data_dicts(books)
+#
+# df = pd.DataFrame(merge_books)
