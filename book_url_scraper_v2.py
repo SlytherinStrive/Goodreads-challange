@@ -7,16 +7,15 @@ import numpy as np
 
 #############################################################################
 ## Get links from the list of books
-def hundred_link_grabber(all_books_url):
+def hundred_link_grabber(all_books_url):.
     page = requests.get(url=all_books_url)
     soup = BeautifulSoup(page.content, 'html.parser')
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
     len_links = len(final_links)
-    ## Returns a list of 100 book links
-    # for l in final_links:
-    #     print(l)
     print(f"Succesfully generated {len_links}")
+
+
     return final_links
 
 
@@ -191,12 +190,19 @@ def main_app(quantity):
     all_urls =[]
     if quantity < 55:
         for i in range(quantity):
-            list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
-            get_url_data = hundred_link_grabber(list_url)
-            all_urls.append(get_url_data)
+            try:
+                print(f"Attempting to take 100 links. Iteration: {i} - awaiting success confirmation")
+                list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
+                get_url_data = hundred_link_grabber(list_url)
+                all_urls.append(get_url_data)
+            except:
+                print(f"***FAILED*** to take links on iteration {i}")
+
     else:
         return "Selected too many books"
-    get_book_data = get_all_books(list_of_urls)
+    total_urls = len(all_urls)
+    print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
+    get_book_data = get_all_books(all_urls)
     return get_book_data
 
 # Debugger function
@@ -219,7 +225,7 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-books = main_app(4)
+books = main_app(40)
 df = pd.DataFrame(merge_data_dicts(books))
 
 df.to_csv('scraped_alot_of_movies.csv', index = False, header=True)
