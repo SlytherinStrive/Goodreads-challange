@@ -1,3 +1,5 @@
+#importing the main libraries
+
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -28,7 +30,7 @@ def get_author(page_soup):
     except:
         print("Oh no get_author failed")
         return np.nan
-
+## Function to get the book title
 def get_title(page_soup):
     try:
         title = page_soup.find('h1', id="bookTitle").get_text().strip()
@@ -37,7 +39,12 @@ def get_title(page_soup):
         print("Oh no get_title failed")
         return np.nan
 
+<<<<<<< HEAD
+=======
+## Function to get the number of pages
+>>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
 def get_number_of_pages(page_soup):
+    # Missing data probelem
     try:
         number_of_pages_unclean = page_soup.find('span', itemprop="numberOfPages").get_text()
         number_of_pages = int("".join([char for char in number_of_pages_unclean if char.isnumeric()]))
@@ -45,7 +52,7 @@ def get_number_of_pages(page_soup):
     except:
         print("Oh no get_number_of_pages failed")
         return np.nan
-
+# Number of ratings
 def get_number_of_ratings(page_soup):
     try:
         number_of_ratings_unclean = page_soup.find('meta', itemprop="ratingCount")
@@ -54,8 +61,12 @@ def get_number_of_ratings(page_soup):
     except:
         print("Oh no get_number_of_ratings failed")
         return np.nan
+<<<<<<< HEAD
 
 
+=======
+# First publication year
+>>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
 def get_first_published(page_soup):
     try:
         details_section = page_soup.find('div', id="details")
@@ -70,7 +81,7 @@ def get_first_published(page_soup):
         print("Oh no get_first_published failed")
         return np.nan
 
-
+# Is the book is part of series (True/False)
 def get_is_series(page_soup):
     try:
         series_section = page_soup.find('h2', id="bookSeries")
@@ -87,7 +98,7 @@ def get_is_series(page_soup):
         print("Oh no get_is_series failed")
         return np.nan
 
-
+# List of awards recieved
 def get_awards(page_soup):
     try:
         awards_section = page_soup.find('div', itemprop="awards")
@@ -98,7 +109,7 @@ def get_awards(page_soup):
     except:
         print("Oh no get_awards failed")
         return np.nan
-
+# Genre of the book
 def get_genres(page_soup):
     try:
         genre_list_unclean = page_soup.find_all('a', class_="actionLinkLite bookPageGenreLink")
@@ -108,7 +119,7 @@ def get_genres(page_soup):
     except:
         print("Oh no get_genres failed")
         return np.nan
-
+# Place (Setting)
 def get_place(page_soup):
     try:
         get_place=page_soup.select('a[href*="/places"]')
@@ -119,7 +130,7 @@ def get_place(page_soup):
     except:
         print("Oh no get_place failed")
         return np.nan
-
+# Getting number of reviews
 def get_num_reviews(page_soup):
     try:
         get_num_unclean=page_soup.find('meta',itemprop="reviewCount")
@@ -128,7 +139,7 @@ def get_num_reviews(page_soup):
     except:
         print("Oh no get_num_reviews failed")
         return np.nan
-
+#Getting average score
 def get_avg(page_soup):
     try:
         get_avg=float(page_soup.find('span',itemprop="ratingValue").get_text())
@@ -136,7 +147,7 @@ def get_avg(page_soup):
     except:
         print("Oh no get avg failed")
         return np.nan
-
+# Creation of the dictionary
 def get_all_books(list_of_urls):
     pd_data =[]
     for book_url in list_of_urls:
@@ -169,6 +180,7 @@ def get_all_books(list_of_urls):
             "place" : [place]}
         pd_data.append(a_book)
     return pd_data
+<<<<<<< HEAD
 #############################################################################
 ## Functions for getting all data
 
@@ -184,10 +196,16 @@ def main_app(quantity):
             all_urls.append(get_url_data)
     else:
         return "Selected too many books"
+=======
+
+# Main scaper function
+def main_app():
+    list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+>>>>>>> 7e1711e12e5d57fa2cb5c650ae893ac8d6ca2376
     get_book_data = get_all_books(list_of_urls)
     return get_book_data
 
-
+# Debugger function
 def debugger_help(book_url):
     request = requests.get(book_url)
     page_soup = BeautifulSoup(request.content,'html.parser')
