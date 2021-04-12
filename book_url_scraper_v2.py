@@ -7,15 +7,13 @@ import numpy as np
 
 #############################################################################
 ## Get links from the list of books
-def hundred_link_grabber(all_books_url):.
+def hundred_link_grabber(all_books_url):
     page = requests.get(url=all_books_url)
     soup = BeautifulSoup(page.content, 'html.parser')
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
     len_links = len(final_links)
     print(f"Succesfully generated {len_links}")
-
-
     return final_links
 
 
