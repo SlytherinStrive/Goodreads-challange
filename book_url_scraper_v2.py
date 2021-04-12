@@ -192,7 +192,7 @@ def main_app(quantity):
                 print(f"Attempting to take 100 links. Iteration: {i} - awaiting success confirmation")
                 list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
                 get_url_data = hundred_link_grabber(list_url)
-                all_urls.append(get_url_data)
+                all_urls.extend(get_url_data)
             except:
                 print(f"***FAILED*** to take links on iteration {i}")
 
@@ -223,7 +223,7 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-books = main_app(40)
+books = main_app(2)
 df = pd.DataFrame(merge_data_dicts(books))
 
 df.to_csv('scraped_alot_of_movies.csv', index = False, header=True)
