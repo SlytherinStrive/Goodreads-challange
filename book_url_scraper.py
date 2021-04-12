@@ -11,10 +11,11 @@ def hundred_link_grabber(all_books_url):
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
     ## Returns a list of 100 book links
-    print(final_links)
+    for l in final_links:
+        print(l)
     return final_links
 
-
+hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
 #############################################################################
 ## Functions for getting data from all books
 def get_author(page_url):
@@ -50,8 +51,8 @@ def get_first_published(page_url):
     details_section = page_soup.find('div', id="details")
     first_published_unclean = details_section.find("nobr", class_="greyText")
     if first_published_unclean != None:
-        text_first_published.get_text()
-        first_published = int(text_first_published.strip()[-6:-1])
+        text = first_published_unclean.get_text()
+        first_published = int(text.strip()[-6:-1])
     else:
         return None
     return first_published
@@ -60,11 +61,14 @@ def get_is_series(page_url):
     request = requests.get(page_url)
     page_soup = BeautifulSoup(request.content, 'html.parser')
     series_section = page_soup.find('h2', id="bookSeries")
-    section_text = series_section.find('a').get_text()
-    if "#" in section_text:
-        return True
+    if series_section!= None:
+        section_text = series_section.find('a').get_text()
+        if "#" in section_text:
+            return True
+        else:
+            return False
     else:
-        return False
+        return np.nan
 
 def get_awards(page_url):
     request = requests.get(page_url)
@@ -83,7 +87,21 @@ def get_genres(page_url):
     str_genre_list = ", ".join(genre_list)
     return str_genre_list
 
+def get_place(page_url):
+    request=requests.get(page_url)
+    page_soup=BeautifulSoup(request.content,'html.parser')
+    get_place=page_soup.select('a[href*="/places"]')
+    place=[]
+    for x in get_place:
+        place.append(x.get_text())
+    return ", ".join(place)
 
+def get_number_of_ratings(page_url):
+    request = requests.get(page_url)
+    page_soup = BeautifulSoup(request.content, 'html.parser')
+    number_of_ratings_unclean = page_soup.find('meta', itemprop="ratingCount")
+    number_of_ratings = int(number_of_ratings_unclean['content'])
+    return number_of_ratings
 
 def get_all_books(list_of_urls):
     pd_data =[]
@@ -91,14 +109,15 @@ def get_all_books(list_of_urls):
         url = book_url
         title = get_title(book_url)
         author = get_author(book_url)
-        #num_reviews = get_num_reviews(book_url)
+        num_reviews = get_num_reviews(book_url)
         num_ratings = get_number_of_ratings(book_url)
-        #avg_rating = get_average_rating()
+        avg_rating = get_average_rating()
         num_pages = get_number_of_pages(book_url)
         original_publish_year = get_first_published(book_url)
         series = get_is_series(book_url)
         genres = get_genres(book_url)
         awards = get_awards(book_url)
+        place = get_place(book_url)
         a_book = {
             "url": url,
             "title":title,
@@ -109,19 +128,20 @@ def get_all_books(list_of_urls):
             "original_publish_year" : original_publish_year,
             "series" :series,
             "genres" : genres,
-            "awards" : awards}
+            "awards" : awards,
+            "place" : place}
         pd_data.append(a_book)
     return pd_data
 
-def main_app():
-    list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
-    get_book_data = get_all_books(list_of_urls)
-    return get_book_data
-
-
-x = main_app()
-
-print(len(x))
-
-for book in x:
-    print(book)
+# def main_app():
+#     list_of_urls = hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+#     get_book_data = get_all_books(list_of_urls)
+#     return get_book_data
+#
+#
+# x = main_app()
+#
+# print(len(x))
+# #
+# for book in x:
+#     print(book)
