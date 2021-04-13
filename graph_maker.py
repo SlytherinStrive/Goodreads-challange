@@ -67,4 +67,3 @@ input_dict = {
 
 finished = False
 viewing = None
-while finished == False:
