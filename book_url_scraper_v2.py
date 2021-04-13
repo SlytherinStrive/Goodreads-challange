@@ -120,8 +120,8 @@ def get_awards_count(page_soup):
         print(str_main_awards)
         return str_main_awards
     except:
-        print("Oh no get_awards failed")
-        return np.nan
+        print("Oh no get_awards_count failed - assuming 0")
+        return 0
 
 
 # Genre of the book
@@ -169,8 +169,9 @@ def get_avg(page_soup):
 # Creation of the dictionary
 def get_all_books(list_of_urls):
     pd_data =[]
-    for book_url in list_of_urls[0:3]:
-        print(f"Working on url: {book_url}")
+    run_total = len(list_of_urls)
+    for i, book_url in enumerate(list_of_urls):
+        print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
         book_id = get_book_id(page_soup)
