@@ -102,12 +102,12 @@ def get_awards(page_soup):
         awards_section = page_soup.find('div', itemprop="awards")
         awards = awards_section.find_all('a', class_="award")
         main_awards = [award.get_text().strip() for award in awards]
-        count_awards = len(main_awards)
         str_main_awards = ", ".join(main_awards)
-        return (count_awards, str_main_awards)
+        return str_main_awards
+
     except:
-        print("Oh no get_awards failed")
-        return (0, np.nan)
+        print("Oh no get_awards failed- assuming 0 awards")
+        return 0
 
 # Genre of the book
 def get_genres(page_soup):
