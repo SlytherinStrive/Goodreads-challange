@@ -73,15 +73,21 @@ def get_first_published(page_soup):
     try:
         details_section = page_soup.find('div', id="details")
         first_published_unclean = details_section.find("nobr", class_="greyText")
-        if first_published_unclean != None:
-            text = first_published_unclean.get_text()
-            first_published = int(text.strip()[-6:-1])
-        else:
-            return None
+        text = first_published_unclean.get_text()
+        first_published = int(text.strip()[-6:-1])
         return first_published
     except:
-        print("Oh no get_first_published failed")
-        return np.nan
+        print("Oh no first attempt to get_first_published failed, trying route 2")
+        try:
+            details_section = page_soup.find('div', id="details")
+            first_published_unclean = details_section.find_all('div', class_="row")
+            specifc_row = [divrow.get_text() for divrow in first_published_unclean if 'ublished' in divrow.get_text()][0].replace("\n"," ")
+            split_row = specifc_row.split(" ")
+            find_date = [element for element in split_row if element.isnumeric()][0]
+            return int(find_date)
+        except:
+            print("Second get_first_published failed, giving nan value")
+            return np.nan
 
 # Is the book is part of series (True/False)
 def get_is_series(page_soup):
@@ -107,7 +113,7 @@ def get_awards(page_soup):
 
     except:
         print("Oh no get_awards failed- assuming 0 awards")
-        return 0
+        return np.nan
 
 
 ## Get count of awards
@@ -297,7 +303,7 @@ def command_line_page_enter():
             # scrape data from the page range
             books = main_app(start_input, end_input + 1)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            df.to_csv(f'data/12scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
 
         # if valid n is selected do the following for a single page
@@ -314,7 +320,7 @@ def command_line_page_enter():
             # scrape data from the single page
             books = main_app(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/Gscrapedpages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/12scrapedpages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("you must enter a 'y' or a 'n' to continue")
@@ -323,10 +329,9 @@ def command_line_page_enter():
 
 
 ### RUNS THE CLI
-command_line_page_enter()
+x = debugger_help("https://www.goodreads.com/book/show/2767052-the-hunger-games")
 
-
-
+print(get_first_published(x))
 
 
 #books = main_app(0,1)

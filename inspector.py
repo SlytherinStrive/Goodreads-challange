@@ -6,4 +6,5 @@ print(len(df))
 
 dfnonan = df.dropna()
 
-print(len(dfnonan))
+
+print(df.isna().sum())
