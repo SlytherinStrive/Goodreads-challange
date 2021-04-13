@@ -10,7 +10,7 @@ def normalise_mean(ratings):
 
 #Transform the number of pages from float to int
 def num_page_clean(num_pages):
-    for obj in num_pages: 
+    for obj in num_pages:
         obj =int(round(obj))
     return (int(num_pages))
 
@@ -24,17 +24,18 @@ def new_ratings(df):
 
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
-    df = df.num_pages.dropna()
-    df = df.avg_rating.dropna()
-    df = df.num_ratings.dropna()
-    df = df.num_reviews.dropna()
-    df = df.original_publish_year.dropna()
-    df = df.reset_index(drop=True)
+    print(len(df))
 
-    df.num_pages = num_page_clean(df.num_pages)
-    new_ratings(df)
+    df = df.dropna(subset=['num_pages'])
+    df = df.dropna(subset=['avg_rating'])
+    df = df.dropna(subset=['num_ratings'])
+    df = df.dropna(subset=['num_reviews'])
+    df = df.dropna(subset=['original_publish_year'])
+    df = df.dropna(subset=['genres'])
+    df = df.reset_index()
+    print(df.isna().sum())
     return df.to_csv("clean_data.csv")
 
 if __name__ == "__main__":
-    load_csv = "scraped_1000.csv"
+    load_csv = "scraped_2000.csv"
     preprocessing(load_csv)
