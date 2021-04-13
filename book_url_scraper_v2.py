@@ -329,9 +329,11 @@ def command_line_page_enter():
 
 
 ### RUNS THE CLI
-x = debugger_help("https://www.goodreads.com/book/show/2767052-the-hunger-games")
 
-print(get_first_published(x))
+command_line_page_enter()
+# x = debugger_help("https://www.goodreads.com/book/show/2767052-the-hunger-games")
+#
+# print(get_first_published(x))
 
 
 #books = main_app(0,1)
