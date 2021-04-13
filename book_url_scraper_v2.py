@@ -313,7 +313,7 @@ def command_line_page_enter():
             # scrape data from the single page
             books = main_app(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/scrapedpages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/Gscrapedpages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("you must enter a 'y' or a 'n' to continue")
