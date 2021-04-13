@@ -343,7 +343,7 @@ def command_line_page_enter():
             ## After all validations is complete, runs the scraper with the desired range of book lists
             books = main_scraper(start_input, end_input + 1)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/12scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            df.to_csv(f'data/10kscraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
 
         # if valid n is selected do the following for a single page
@@ -360,7 +360,7 @@ def command_line_page_enter():
             # scrape data from the single page
             books = main_app(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/12scrapedpages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/10kscrapedpages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("you must enter a 'y' or a 'n' to continue")
