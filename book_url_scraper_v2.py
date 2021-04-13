@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
+from logo import logo_printer
 
 #############################################################################
 ## Functions for getting column data from a book webpage
@@ -195,7 +196,7 @@ input : str - a url that is a page on from https://www.goodreads.com that contai
 output: list - containing dictionaries with the books data from each url inputted
 
 """
-def get_all_books_data(list_of_urls):
+def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
     for i, book_url in enumerate(list_of_urls):
@@ -307,11 +308,17 @@ def merge_data_dicts(list_of_dictionaries):
 #############################################################################
 ## THIS IS TERMINAL INTERFACE FOR SELECTING HOW MUCH TO SCRAPE
 def command_line_page_enter():
+    logo_printer()
     ## Check if user wishes for a single list of books (100) or a range of lists (1-100)
     check_input = None
     while check_input == None:
-        print("Would you like to enter a range of paginations?")
-        user_input = input("enter y or n:  ")
+        print("\n     Welcome to the great reads book scraper for the best books of all time..")
+        print("\n     To begin scraping please set your parameters for the quantity of books you need.")
+        print("\n     Each book list contains 100 books and we can search upto 100 lists.")
+        print("\n     You can scrape a specific list from 100 book lists they offer by entering the relative number.")
+        print("\n     Alternatively if you need upto 10,000 books can enter a range of book list pages from 1-100")
+        print("\n   Would you like to enter a range of book list pages?")
+        user_input = input("\n>>> Enter 'y' for Yes or a 'n' for No:  ")
 
     ## Validation for two entries: Must be a "y" or "n"
         ## "y" will ask you to enter a range of book lists,
@@ -321,15 +328,15 @@ def command_line_page_enter():
 
             ## Loop that runs until a valid start and end of range has been entered
             while start_input == None and end_input == None:
-                start_check = input("enter start of range (from 1 to 99):  ")
-                end_check = input("enter end of range from (2 to 100):  ")
+                start_check = input("\n>>> start of range (from 1 to 99):  ")
+                end_check = input("\n>>> Enter end of range from (2 to 100):  ")
 
                 ## Validate the start choice, making sure it is between the correct range
                 if start_check.isnumeric():
                     if int(start_check) in range(1,100):
                         start_input = int(start_check)
                     else:
-                        print("You need to enter a start input between 1 & 99:  ")
+                        print("\nYou need to enter a start input between 1 & 99:  ")
                         start_input = None
 
                 # Validate the end choice, making sure it is between the correct range
@@ -337,7 +344,7 @@ def command_line_page_enter():
                     if int(end_check) in range(2,101):
                         end_input = int(end_check)
                     else:
-                        print("You need to enter an end input between 2 & 100:  ")
+                        print("\nYou need to enter an end input between 2 & 100:  ")
                         end_input = None
 
             ## After all validations is complete, runs the scraper with the desired range of book lists
@@ -350,7 +357,7 @@ def command_line_page_enter():
         elif user_input == "n":
             page_input = None
             while page_input == None:
-                page_check = input("enter pagination number (from 1 to 100):  ")
+                page_check = input("\n>>> Enter book list number (from 1 to 100):  ")
                 if page_check.isnumeric():
                     if int(page_check) in range(1,101):
                         page_input= int(page_check)
@@ -363,7 +370,7 @@ def command_line_page_enter():
             df.to_csv(f'data/10kscrapedpages_{page_input}.csv', index = False, header=True)
             break
         else:
-            print("you must enter a 'y' or a 'n' to continue")
+            print("\n You must enter a 'y' or a 'n' to continue")
             user_input = None
 
 
