@@ -199,7 +199,7 @@ output: list - containing dictionaries with the books data from each url inputte
 def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
-    for i, book_url in enumerate(list_of_urls):
+    for i, book_url in enumerate(list_of_urls[0:2]):
         print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
