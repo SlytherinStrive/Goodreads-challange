@@ -109,6 +109,21 @@ def get_awards(page_soup):
         print("Oh no get_awards failed- assuming 0 awards")
         return 0
 
+
+## Get count of awards
+def get_awards_count(page_soup):
+    try:
+        awards_section = page_soup.find('div', itemprop="awards")
+        awards = awards_section.find_all('a', class_="award")
+        main_awards = [award.get_text().strip() for award in awards]
+        str_main_awards =len((", ".join(main_awards)).split(',')) #len(main_awards)
+        print(str_main_awards)
+        return str_main_awards
+    except:
+        print("Oh no get_awards failed")
+        return np.nan
+
+
 # Genre of the book
 def get_genres(page_soup):
     try:
@@ -169,13 +184,14 @@ def get_all_books(list_of_urls):
         series = get_is_series(page_soup)
         genres = get_genres(page_soup)
         awards = get_awards(page_soup)
+        award_count = get_awards_count(page_soup)
         place = get_place(page_soup)
 
         a_book = {
             "url": [book_url],
             "book_id":[book_id],
             "title":[title],
-            #"award_count": [award_count],
+            "award_count": [award_count],
             "author" :[author],
             "avg_rating": [avg_rating],
             "num_reviews" : [num_ratings],
@@ -280,7 +296,7 @@ def command_line_page_enter():
             # scrape data from the page range
             books = main_app(start_input, end_input + 1)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            df.to_csv(f'data/scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
 
         # if valid n is selected do the following for a single page
@@ -297,7 +313,7 @@ def command_line_page_enter():
             # scrape data from the single page
             books = main_app(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'scrapedpages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/scrapedpages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("you must enter a 'y' or a 'n' to continue")
