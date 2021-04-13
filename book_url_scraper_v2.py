@@ -303,7 +303,14 @@ def command_line_page_enter():
             print("you must enter a 'y' or a 'n' to continue")
             user_input = None
 
+
+
+### RUNS THE CLI
 command_line_page_enter()
+
+
+
+
 
 #books = main_app(0,1)
 # df = pd.DataFrame(merge_data_dicts(books))
