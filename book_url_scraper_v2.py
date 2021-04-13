@@ -19,6 +19,15 @@ def hundred_link_grabber(all_books_url):
 
 #############################################################################
 ## Functions for getting data from all books
+def get_book_id(page_soup):
+    try:
+        book_id_section = page_soup.find('div', class_="asyncPreviewButtonContainer")
+        book_id = book_id_section['data-book-id']
+        ## Returns the author from the page
+        return book_id
+    except:
+        print("Oh no get_book_id failed")
+        return np.nan
 
 ## Function to get the author
 def get_author(page_soup):
@@ -78,18 +87,14 @@ def get_first_published(page_soup):
 def get_is_series(page_soup):
     try:
         series_section = page_soup.find('h2', id="bookSeries")
-        section_text = series_section.find('a')
-        if series_section != None:
-            check_if_series = series_section.find('a').get_text()
-            if "#" in check_if_series:
-                return True
-            else:
-                return False
+        is_series = series_section.find('a').get_text()
+        if "#" in is_series:
+            return True
         else:
-            return np.nan
+            return False
     except:
-        print("Oh no get_is_series failed")
-        return np.nan
+        print("Get series had no data- assuming False")
+        return False
 
 # List of awards recieved
 def get_awards(page_soup):
@@ -99,9 +104,10 @@ def get_awards(page_soup):
         main_awards = [award.get_text().strip() for award in awards]
         str_main_awards = ", ".join(main_awards)
         return str_main_awards
+
     except:
-        print("Oh no get_awards failed")
-        return np.nan
+        print("Oh no get_awards failed- assuming 0 awards")
+        return 0
 
 # Genre of the book
 def get_genres(page_soup):
@@ -118,7 +124,7 @@ def get_genres(page_soup):
 def get_place(page_soup):
     try:
         get_place=page_soup.select('a[href*="/places"]')
-        place=[]
+        place = []
         for x in get_place:
             place.append(x.get_text())
         return ", ".join(place)
@@ -148,10 +154,11 @@ def get_avg(page_soup):
 # Creation of the dictionary
 def get_all_books(list_of_urls):
     pd_data =[]
-    for book_url in list_of_urls:
+    for book_url in list_of_urls[0:3]:
         print(f"Working on url: {book_url}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
+        book_id = get_book_id(page_soup)
         title = get_title(page_soup)
         author = get_author(page_soup)
         num_reviews = get_num_reviews(page_soup)
@@ -163,9 +170,12 @@ def get_all_books(list_of_urls):
         genres = get_genres(page_soup)
         awards = get_awards(page_soup)
         place = get_place(page_soup)
+
         a_book = {
             "url": [book_url],
+            "book_id":[book_id],
             "title":[title],
+            #"award_count": [award_count],
             "author" :[author],
             "avg_rating": [avg_rating],
             "num_reviews" : [num_ratings],
@@ -181,23 +191,29 @@ def get_all_books(list_of_urls):
 
 #############################################################################
 ## Functions for getting all data
-def main_app(quantity):
+def main_app(start_range, end_range=None):
     """
     quantity is sets of 100 books
     """
-    all_urls =[]
-    if quantity < 55:
-        for i in range(quantity):
+    all_urls = []
+    if end_range:
+        for i in range(start_range, end_range):
             try:
                 print(f"Attempting to take 100 links. Iteration: {i} - awaiting success confirmation")
                 list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
                 get_url_data = hundred_link_grabber(list_url)
-                all_urls.append(get_url_data)
+                all_urls.extend(get_url_data)
             except:
                 print(f"***FAILED*** to take links on iteration {i}")
-
     else:
-        return "Selected too many books"
+        try:
+            print(f"Attempting to take 100 links. from pagination {start_range}- awaiting success confirmation")
+            list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={start_range}"
+            get_url_data = hundred_link_grabber(list_url)
+            all_urls.extend(get_url_data)
+        except:
+            print(f"***FAILED*** to take links on pagination {start_range}")
+
     total_urls = len(all_urls)
     print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
     get_book_data = get_all_books(all_urls)
@@ -223,10 +239,76 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-books = main_app(40)
-df = pd.DataFrame(merge_data_dicts(books))
 
-df.to_csv('scraped_alot_of_movies.csv', index = False, header=True)
+
+#############################################################################
+## THIS IS TERMINAL INTERFACE FOR SELECTING WHAT TO SCRAPE
+def command_line_page_enter():
+    print("Would you like to enter a range of paginations?")
+    check_input = None
+
+    ## Check whether running single page of links or a range
+    while check_input == None:
+        user_input = input("enter y or n:")
+
+        ## Validation for two entries of y or n
+        if user_input == "y":
+            print("made it here")
+            start_input = None
+            end_input = None
+            while start_input == None and end_input == None:
+                # inputs that keeps asking until validation is complete
+                start_check = input("enter start of range (from 1 to 99): ")
+                end_check = input("enter end of range from (2 to 100): ")
+
+                # Validate start choice
+                if start_check.isnumeric():
+                    if int(start_check) in range(1,100):
+                        start_input = int(start_check)
+                    else:
+                        print("You need to enter a start input between 1 & 99")
+                        start_input = None
+
+                ## Validate end choice
+                if end_check.isnumeric():
+                    if int(end_check) in range(2,101):
+                        end_input = int(end_check)
+                    else:
+                        print("You need to enter an end input between 2 & 100")
+                        end_input = None
+
+            # scrape data from the page range
+            books = main_app(start_input, end_input + 1)
+            df = pd.DataFrame(merge_data_dicts(books))
+            df.to_csv(f'scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            break
+
+        # if valid n is selected do the following for a single page
+        elif user_input == "n":
+            page_input = None
+            while page_input == None:
+                page_check = input("enter pagination number (from 1 to 100)")
+                if page_check.isnumeric():
+                    if int(page_check) in range(1,101):
+                        page_input= int(page_check)
+                else:
+                    page_input = None
+
+            # scrape data from the single page
+            books = main_app(page_input)
+            df = pd.DataFrame(merge_data_dicts(books))
+            df.to_csv(f'scrapedpages_{page_input}.csv', index = False, header=True)
+            break
+        else:
+            print("you must enter a 'y' or a 'n' to continue")
+            user_input = None
+
+command_line_page_enter()
+
+#books = main_app(0,1)
+# df = pd.DataFrame(merge_data_dicts(books))
+#
+# df.to_csv('scrapedpages_8_10.csv', index = False, header=True)
 
 
 
