@@ -1,24 +1,19 @@
 #importing the main libraries
-
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
 
 #############################################################################
-## Get links from the list of books
-def hundred_link_grabber(all_books_url):
-    page = requests.get(url=all_books_url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    links_section = soup.find_all('a', class_="bookTitle", href=True)
-    final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
-    len_links = len(final_links)
-    print(f"Succesfully generated {len_links}")
-    return final_links
+## Functions for getting column data from a book webpage
+"""
+The following book data functions take the format:
 
+input : page_soup - a BeautifulSoup object generated from a url of a book page
 
-#############################################################################
-## Functions for getting data from all books
+output: i)  str, int, float, boolean - a perfectly selected piece of data
+        ii) np.nan - a missing piece of data
+"""
 def get_book_id(page_soup):
     try:
         book_id_section = page_soup.find('div', class_="asyncPreviewButtonContainer")
@@ -79,6 +74,7 @@ def get_first_published(page_soup):
     except:
         print("Oh no first attempt to get_first_published failed, trying route 2")
         try:
+            # this handles a poorly formatted page option where the published year is not first found
             details_section = page_soup.find('div', id="details")
             first_published_unclean = details_section.find_all('div', class_="row")
             specifc_row = [divrow.get_text() for divrow in first_published_unclean if 'ublished' in divrow.get_text()][0].replace("\n"," ")
@@ -114,7 +110,6 @@ def get_awards(page_soup):
     except:
         print("Oh no get_awards failed- assuming 0 awards")
         return np.nan
-
 
 ## Get count of awards
 def get_awards_count(page_soup):
@@ -172,8 +167,36 @@ def get_avg(page_soup):
         print("Oh no get avg failed")
         return np.nan
 
-# Creation of the dictionary
-def get_all_books(list_of_urls):
+
+#############################################################################
+## Get links from the list of books
+"""
+[Scraping Stage 2 = Hundred link grabber]
+input : list - containing a list of books from https://www.goodreads.com
+
+output: list - containing the 100 books found on that page
+
+"""
+def hundred_link_grabber(all_books_url):
+    page = requests.get(url=all_books_url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    links_section = soup.find_all('a', class_="bookTitle", href=True)
+    final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
+    len_links = len(final_links)
+    print(f"Succesfully generated {len_links}")
+    return final_links
+
+
+#############################################################################
+## Get data from individual book pages
+"""
+[Scraping Stage 3 = Get_all_books_data]
+input : str - a url that is a page on from https://www.goodreads.com that contains a list of books
+
+output: list - containing dictionaries with the books data from each url inputted
+
+"""
+def get_all_books_data(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
     for i, book_url in enumerate(list_of_urls):
@@ -193,7 +216,6 @@ def get_all_books(list_of_urls):
         awards = get_awards(page_soup)
         award_count = get_awards_count(page_soup)
         place = get_place(page_soup)
-
         a_book = {
             "url": [book_url],
             "book_id":[book_id],
@@ -212,9 +234,28 @@ def get_all_books(list_of_urls):
         pd_data.append(a_book)
     return pd_data
 
+
 #############################################################################
-## Functions for getting all data
-def main_app(start_range, end_range=None):
+## Generates the intital links for lists of books
+"""
+[Scraping STAGE 1 = main_scraper]
+args  : start_range - an int between 1-99
+                    the page number you wish to scrape 1-99
+
+kwargs: end_range - defaults to None
+                    if an int is entered between 2-101
+                    the start_range becomes the start of a range
+                    and the end_range becomes the end of the range
+
+output: list - containing dictionaries with the books data from each url inputted
+
+Scraping stages...
+This runs the other 2 functions in order
+firstly grabs the amount of links as specificed by the inputs
+secondly grabs the data from those books
+
+"""
+def main_scraper(start_range, end_range=None):
     """
     quantity is sets of 100 books
     """
@@ -242,13 +283,15 @@ def main_app(start_range, end_range=None):
     get_book_data = get_all_books(all_urls)
     return get_book_data
 
-# Debugger function
-def debugger_help(book_url):
-    request = requests.get(book_url)
-    page_soup = BeautifulSoup(request.content,'html.parser')
-    return page_soup
 
-# Used for merging all the book dictionaries into one for easy dataframe creation
+#############################################################################
+## Used for merging all the book dictionaries into one for easy dataframe creation
+"""
+args  : list_of_dictionaries - a list of dictionaries containing
+                                book data.
+
+output: dictionary - all of the dictionary values merged into lists
+"""
 def merge_data_dicts(list_of_dictionaries):
     all_data = {}
     for dict in list_of_dictionaries:
@@ -262,28 +305,27 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-
-
 #############################################################################
-## THIS IS TERMINAL INTERFACE FOR SELECTING WHAT TO SCRAPE
+## THIS IS TERMINAL INTERFACE FOR SELECTING HOW MUCH TO SCRAPE
 def command_line_page_enter():
-    print("Would you like to enter a range of paginations?")
+    ## Check if user wishes for a single list of books (100) or a range of lists (1-100)
     check_input = None
-
-    ## Check whether running single page of links or a range
     while check_input == None:
+        print("Would you like to enter a range of paginations?")
         user_input = input("enter y or n:  ")
 
-        ## Validation for two entries of y or n
+    ## Validation for two entries: Must be a "y" or "n"
+        ## "y" will ask you to enter a range of book lists,
         if user_input == "y":
             start_input = None
             end_input = None
+
+            ## Loop that runs until a valid start and end of range has been entered
             while start_input == None and end_input == None:
-                # inputs that keeps asking until validation is complete
                 start_check = input("enter start of range (from 1 to 99):  ")
                 end_check = input("enter end of range from (2 to 100):  ")
 
-                # Validate start choice
+                ## Validate the start choice, making sure it is between the correct range
                 if start_check.isnumeric():
                     if int(start_check) in range(1,100):
                         start_input = int(start_check)
@@ -291,7 +333,7 @@ def command_line_page_enter():
                         print("You need to enter a start input between 1 & 99:  ")
                         start_input = None
 
-                ## Validate end choice
+                # Validate the end choice, making sure it is between the correct range
                 if end_check.isnumeric():
                     if int(end_check) in range(2,101):
                         end_input = int(end_check)
@@ -299,8 +341,8 @@ def command_line_page_enter():
                         print("You need to enter an end input between 2 & 100:  ")
                         end_input = None
 
-            # scrape data from the page range
-            books = main_app(start_input, end_input + 1)
+            ## After all validations is complete, runs the scraper with the desired range of book lists
+            books = main_scraper(start_input, end_input + 1)
             df = pd.DataFrame(merge_data_dicts(books))
             df.to_csv(f'data/12scraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
@@ -328,20 +370,12 @@ def command_line_page_enter():
 
 
 ### RUNS THE CLI
-
-command_line_page_enter()
-# x = debugger_help("https://www.goodreads.com/book/show/2767052-the-hunger-games")
-#
-# print(get_first_published(x))
+if __name__ == "__main__":
+    command_line_page_enter()
 
 
-#books = main_app(0,1)
-# df = pd.DataFrame(merge_data_dicts(books))
-#
-# df.to_csv('scrapedpages_8_10.csv', index = False, header=True)
-
-
-
-# merge_books = merge_data_dicts(books)
-#
-# df = pd.DataFrame(merge_books)
+### Helper functions
+def debugger_help(book_url):
+    request = requests.get(book_url)
+    page_soup = BeautifulSoup(request.content,'html.parser')
+    return page_soup

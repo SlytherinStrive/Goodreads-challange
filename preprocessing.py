@@ -24,7 +24,6 @@ def new_ratings(df):
 
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
-    print(len(df))
     ### Clean Data
     df = df.dropna(subset=['num_pages', 'avg_rating', 'num_ratings', 'num_reviews', 'original_publish_year','genres'])
     df = df.reset_index()
