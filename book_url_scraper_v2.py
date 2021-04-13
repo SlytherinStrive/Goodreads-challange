@@ -272,24 +272,23 @@ def command_line_page_enter():
 
     ## Check whether running single page of links or a range
     while check_input == None:
-        user_input = input("enter y or n:")
+        user_input = input("enter y or n:  ")
 
         ## Validation for two entries of y or n
         if user_input == "y":
-            print("made it here")
             start_input = None
             end_input = None
             while start_input == None and end_input == None:
                 # inputs that keeps asking until validation is complete
-                start_check = input("enter start of range (from 1 to 99): ")
-                end_check = input("enter end of range from (2 to 100): ")
+                start_check = input("enter start of range (from 1 to 99):  ")
+                end_check = input("enter end of range from (2 to 100):  ")
 
                 # Validate start choice
                 if start_check.isnumeric():
                     if int(start_check) in range(1,100):
                         start_input = int(start_check)
                     else:
-                        print("You need to enter a start input between 1 & 99")
+                        print("You need to enter a start input between 1 & 99:  ")
                         start_input = None
 
                 ## Validate end choice
@@ -297,7 +296,7 @@ def command_line_page_enter():
                     if int(end_check) in range(2,101):
                         end_input = int(end_check)
                     else:
-                        print("You need to enter an end input between 2 & 100")
+                        print("You need to enter an end input between 2 & 100:  ")
                         end_input = None
 
             # scrape data from the page range
@@ -310,7 +309,7 @@ def command_line_page_enter():
         elif user_input == "n":
             page_input = None
             while page_input == None:
-                page_check = input("enter pagination number (from 1 to 100)")
+                page_check = input("enter pagination number (from 1 to 100):  ")
                 if page_check.isnumeric():
                     if int(page_check) in range(1,101):
                         page_input= int(page_check)
