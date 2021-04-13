@@ -33,7 +33,8 @@ def preprocessing(csv_lock):
     df = df.dropna(subset=['original_publish_year'])
     df = df.dropna(subset=['genres'])
     df = df.reset_index()
-    print(df.isna().sum())
+    df['normalise_mean'] = normalise_mean(df['avg_rating'])
+
     return df.to_csv("clean_data.csv")
 
 if __name__ == "__main__":
