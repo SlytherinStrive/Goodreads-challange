@@ -21,4 +21,4 @@ for filename in all_files:
 
 df = pd.concat(li, axis=0, ignore_index=True)
 
-df.to_csv('scraped_1000.csv',index = False, header=True)
+df.to_csv('scraped_2000.csv',index = False, header=True)
