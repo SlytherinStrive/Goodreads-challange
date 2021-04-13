@@ -31,7 +31,7 @@ def preprocessing(csv_lock):
     df[['num_pages', 'num_ratings', 'num_reviews']] = df[['num_pages', 'num_ratings', 'num_reviews']].astype(int)
     df[['url', 'title', 'author', 'genres', 'awards', 'place']] = df[['url', 'title', 'author', 'genres', 'awards', 'place']].astype(str)
     ### Add new columns
-    df['normalise_mean'] = normalise_mean(df['av g_rating'])
+    df['normalise_mean'] = normalise_mean(df['avg_rating'])
     print(df.isna().sum())
     print(df.info())
     return df.to_csv(f"data/preprocess_complete_.csv")
