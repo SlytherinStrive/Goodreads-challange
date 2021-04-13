@@ -25,18 +25,17 @@ def new_ratings(df):
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
     print(len(df))
-
-    df = df.dropna(subset=['num_pages'])
-    df = df.dropna(subset=['avg_rating'])
-    df = df.dropna(subset=['num_ratings'])
-    df = df.dropna(subset=['num_reviews'])
-    df = df.dropna(subset=['original_publish_year'])
-    df = df.dropna(subset=['genres'])
+    ### Clean Data
+    df = df.dropna(subset=['num_pages', 'avg_rating', 'num_ratings', 'num_reviews', 'original_publish_year','genres'])
     df = df.reset_index()
-    df['normalise_mean'] = normalise_mean(df['avg_rating'])
-
-    return df.to_csv("clean_data.csv")
+    df[['num_pages', 'num_ratings', 'num_reviews']] = df[['num_pages', 'num_ratings', 'num_reviews']].astype(int)
+    df[['url', 'title', 'author', 'genres', 'awards', 'place']] = df[['url', 'title', 'author', 'genres', 'awards', 'place']].astype(str)
+    ### Add new columns
+    df['normalise_mean'] = normalise_mean(df['av g_rating'])
+    print(df.isna().sum())
+    print(df.info())
+    return df.to_csv(f"data/preprocess_complete_.csv")
 
 if __name__ == "__main__":
-    load_csv = "scraped_2000.csv"
+    load_csv = "data/scraped_2000.csv"
     preprocessing(load_csv)
