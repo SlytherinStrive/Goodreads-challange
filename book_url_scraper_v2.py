@@ -1,4 +1,4 @@
-#importing the main libraries
+# importing the main libraries
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -175,7 +175,6 @@ def get_avg(page_soup):
 input : list - containing a list of books from https://www.goodreads.com
 
 output: list - containing the 100 books found on that page
-
 """
 def hundred_link_grabber(all_books_url):
     page = requests.get(url=all_books_url)
