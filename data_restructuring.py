@@ -4,7 +4,7 @@ import glob
 import datetime as dt
 
 
-def csv_merger(new_filename, path=r'data/combinefiles', date_inclue=True):
+def csv_merger(new_filename, path=r'data/combinefiles', date_include=True):
     # Checks new file name is a string
     if isinstance(new_filename, str):
         ## Gathers all csv's in specified path
@@ -29,7 +29,7 @@ def csv_merger(new_filename, path=r'data/combinefiles', date_inclue=True):
     else:
         print("Invalid new file name - must be type(str)")
 
-        
+
 def merge_data_dicts(list_of_dictionaries):
     all_data = {}
     for dict in list_of_dictionaries:
