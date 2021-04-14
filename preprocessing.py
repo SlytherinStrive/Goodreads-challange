@@ -42,7 +42,7 @@ def preprocessing(csv_lock):
     ### Add new columns
     df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
-    df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
+
 
     print(df.isna().sum())
     print(df.info())
