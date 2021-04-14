@@ -2,6 +2,12 @@ import pandas as pd
 import numpy as np
 import re
 
+#Normalise the min-max data and transform into a 1-10 range
+def min_max_normalise(ratings):
+    normalised = ((ratings - min(ratings)) / (max(ratings) - min(ratings)))
+    transform = ((normalised + 1) * 4.5) + 1
+    return transform
+
 #Normalise the data and transform into a 1-10 range
 def normalise_mean(ratings):
     normalised = ((ratings - np.mean(ratings)) / (max(ratings) - min(ratings)))
@@ -18,10 +24,6 @@ def num_page_clean(num_pages):
 def awards_cleaned(awards):
     return (awards.str.count(r"([0-9]{4})")).replace(np.nan, 0)
 
-#Calculate the normalized ratings
-def new_ratings(df):
-    df["mean_norm_ratings"] = normalise_mean(df.avg_rating)
-
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
     ### Clean Data
@@ -30,6 +32,7 @@ def preprocessing(csv_lock):
     df[['num_pages', 'num_ratings', 'num_reviews']] = df[['num_pages', 'num_ratings', 'num_reviews']].astype(int)
     df[['url', 'title', 'author', 'genres', 'awards', 'place']] = df[['url', 'title', 'author', 'genres', 'awards', 'place']].astype(str)
     ### Add new columns
+    df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
     
     print(df.isna().sum())
