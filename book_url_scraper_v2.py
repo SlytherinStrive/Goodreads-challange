@@ -261,7 +261,7 @@ def main_scraper(start_range, end_range=None):
     """
     all_urls = []
     if end_range:
-        for i in range(start_range, end_range):
+        for i in range(start_range, end_range+1):
             try:
                 print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
                 list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
@@ -348,7 +348,7 @@ def command_line_page_enter():
                         end_input = None
 
             ## After all validations is complete, runs the scraper with the desired range of book lists
-            books = main_scraper(start_input, end_input + 1)
+            books = main_scraper(start_input, end_input)
             df = pd.DataFrame(merge_data_dicts(books))
             df.to_csv(f'combinefiles/data/10kscraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
