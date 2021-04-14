@@ -28,3 +28,16 @@ def csv_merger(new_filename, path=r'data/combinefiles', date_inclue=True):
             print("Invalid argument for date_include. Must be True or False")
     else:
         print("Invalid new file name - must be type(str)")
+
+        
+def merge_data_dicts(list_of_dictionaries):
+    all_data = {}
+    for dict in list_of_dictionaries:
+        for key, value in dict.items():
+            if key in all_data.keys():
+                current_data = all_data[key]
+                combined_data = current_data + value
+                all_data[key] = combined_data
+            else:
+                all_data[key] = value
+    return all_data

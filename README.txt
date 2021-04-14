@@ -33,19 +33,78 @@ Key components:
 
 Helper components:
   For restructuring CSV's and Python dictionaries: data_restructuring.py
-  For editing the scrapers data source: scraper_settings.py
+
+A note about contribution:
+  This is an open source project, if you wish to contribute view the contributions section at
+  the end of this README. Throughout the README if you see a (*#*) notation there is a plan in place
+  for future development by our team or a chance for you to add a meaningful contribution.
 
 
-How to use: data_scraper.py
+              HOW TO USE GOOD-READS GREATEST BOOKS DATA SCRAPER & ANALYSIS
+              ------------------------------------------------------------
+
+data_scraper.py
+  INPUT  : Command line interface
+  OUTPUT : a CSV of book data.
+      url
+      book_id
+      title
+      award_count,
+      author,
+      avg_rating,
+      num_reviews,
+      num_ratings,
+      num_pages,
+      original_publish_year,
+      series,
+      genres,
+      awards,
+      place,minmax_norm_ratings,normalise_mean
+
+
+  What does it do?
+  It scrapes links to books, it then runs a second scrape on all of these individual books urls to get
+  the book data listed in OUTPUT.
+
+
   About the data source
-  Data source: https://www.goodreads.com/
-  Specific url: https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1
-  Example book page: https://www.goodreads.com/book/show/2767052-the-hunger-games
+    Data source: https://www.goodreads.com/
+    Specific url: https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1
+    Example book page: https://www.goodreads.com/book/show/2767052-the-hunger-games
 
-  This scraper is designed to work with the specified "Data source". To answer the question
-  that motivated us to create this project it works on the "Specific url". A user can edit
-  this in the scraperto get data on any list at provided at the Data source.
-  Currently this opti See the contributions section for other
+
+    This scraper is designed to work with the specified "Data source". To answer the question
+    that motivated us to create this project it works on the example "Specific url". A user can edit
+    this in the scraper to get data on any list at provided at the Data source. This is done by editing
+    the data_scraper.py file variable "URL_SETTING":
+
+    ABOUT: URL_SETTING = "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1"
+      If you wish to scrape other lists you may change the URL_SETTING. It runs on lists of books that
+      have a 'pagination' style. a valid url will end with "?page=i" where 'i' is the pagination number.(*1*)
+
+    ABOUT: command_line_interface()
+      This function prompts the user to specify how much data they wish to scrape. The first question
+      is a yes/no question asking if they want to scrape a range of book lists. Answering no defaults
+      the scraper to search from a single list of 100 books where they can enter the specific pagination
+      number they wish to scrape.
+              [** INSERT IMAGE HERE **]
+
+      If the user answers yes then they will be prompted to enter 2 numbers, the pagination number to start
+      the scrape on and the pagination number to end it on.
+              E.g. selecting '1' and '10' will scrape 10 lists of 100 books each.
+              [** INSERT IMAGE HERE **]
+
+    ABOUT: Terminal messages
+      The first process of the scraper is to collect individual book links (see ABOUT: hundred_link_grabber()).
+      As this function runs it will confirm that it has received the quantity of links it was looking for.
+
+
+
+
+
+
+
+
 
 
 How to use: data_preprocessor.py
