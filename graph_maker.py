@@ -7,8 +7,12 @@ from sklearn.preprocessing import StandardScaler
 
 df = pd.read_csv("data/preprocess_complete.csv")
 
+# 2. Correlation between Number of Reviews and Number of Pages
+corr_pages_review = df.corr().loc['num_pages','num_ratings']
+print (f"Correlation between number of pages and rating is {round(corr_pages_review,5)}")
 
 
+# Graph most reviewed books
 def most_reviewd_books(df):
     mostly_reviewed = df.sort_values(by='num_reviews', ascending=False) # Sorting by number of reviews
     mostly_reviewed = mostly_reviewed[['title','num_reviews']] # Selecting just the columns we want
