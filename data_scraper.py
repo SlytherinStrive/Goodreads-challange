@@ -182,8 +182,8 @@ input : list - containing a list of books from https://www.goodreads.com
 
 output: list - containing the 100 books found on that page
 """
-def hundred_link_grabber(all_books_url):
-    page = requests.get(url=all_books_url)
+def hundred_link_grabber(pagination_url):
+    page = requests.get(url=pagination_url)
     soup = BeautifulSoup(page.content, 'html.parser')
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]

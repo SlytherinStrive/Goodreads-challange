@@ -11,8 +11,6 @@ df = pd.read_csv("data/preprocess_complete.csv")
 corr_pages_review = df.corr().loc['num_pages','num_ratings']
 print (f"Correlation between number of pages and rating is {round(corr_pages_review,5)}")
 
-
-
 # 4. Visualise the minmax_norm_rating distribution.
 sns.displot(df, x="minmax_norm_ratings", kde=True, fill=True)
 plt.title('MinMax Normalization distribution', fontsize='13')
@@ -28,7 +26,7 @@ plt.legend(loc=1)
 plt.show()
 
 # Graph most reviewed books
-def most_reviewd_books(df):
+def most_reviewed_books(df):
     mostly_reviewed = df.sort_values(by='num_reviews', ascending=False) # Sorting by number of reviews
     mostly_reviewed = mostly_reviewed[['title','num_reviews']] # Selecting just the columns we want
     mostly_reviewed = mostly_reviewed.head(15) # Choosing only the top 10 books
@@ -78,7 +76,7 @@ def plotPerColumnDistribution(df, nGraphShown, nGraphPerRow):
 
 
 input_dict = {
-            "1": most_reviewd_books(df),
+            "1": most_reviewed_books(df),
             "2": plotCorrelationMatrix(df, 8),
             "3": plotPerColumnDistribution(df, 10, 5),
             }
