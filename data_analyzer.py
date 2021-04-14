@@ -31,7 +31,7 @@ def avg_rating_dist(df):
 
 # 4. Visualise the minmax_norm_rating distribution.
 sns.displot(df, x="minmax_norm_ratings", kde=True, fill=True)
-plt.title('MinMax Normalization distribution', fontsize='13')
+plt.title('MinMax Normalization distribution', fontsize='20')
 plt.xlabel('MinMax Distribution')
 plt.show()
 
@@ -39,14 +39,14 @@ plt.show()
 sns.histplot(data=df, x="normalise_mean", color="navy", label="Mean", kde=True)
 sns.histplot(data=df, x="minmax_norm_ratings", color="red", label="Min/Max", kde=True)
 plt.xlabel('Rating')
-plt.title('Min/Max and Mean Distributions', fontsize='13')
+plt.title('Min/Max and Mean Distributions', fontsize='20')
 plt.legend(loc=1)
 plt.show()
 
 #8. Visualize the `awards` distribution in a **boxplot** and **aggregated bars**. Decide which of these representations gives us more information and in which cases they should be used.
 # a. boxplot
 df[['award_count']].plot.box(vert=False, color='blue')
-plt.title('Number of Awards', fontsize='13')
+plt.title('Number of Awards', fontsize='20')
 plt.show
 # b.aggregate bars of total awards by books
 most_awards = df.sort_values(by='award_count', ascending=False)
@@ -55,7 +55,7 @@ most_awards = most_awards.head(20)
 
 plt.figure(figsize=(10,5))
 sns.barplot(y='title', x='award_count', data = most_awards, palette="Paired")
-plt.title('15 Most Awarded Books', fontsize='13')
+plt.title('15 Most Awarded Books', fontsize='20')
 plt.xlabel('Number of Awards')
 plt.ylabel('Book Title')
 plt.show()
@@ -63,7 +63,7 @@ plt.show()
 
 
 # Graph most reviewed books
-def most_reviewd_books(df):
+def most_reviewed_books(df):
     mostly_reviewed = df.sort_values(by='num_reviews', ascending=False) # Sorting by number of reviews
     mostly_reviewed = mostly_reviewed[['title','num_reviews']] # Selecting just the columns we want
     mostly_reviewed = mostly_reviewed.head(15) # Choosing only the top 10 books
@@ -76,25 +76,19 @@ def most_reviewd_books(df):
 
 
 input_dict = {
-            "1": ,
+            #"1":,
             "2": pages_vs_ratings_scat(df),
-            "3": ,
-            "4": ,
-            "5": ,
-            "6": ,
-            "7": ,
-            "8": ,
-            "9": ,
-            "10": ,
-            "11": most_reviewd_books(df),
-
-
-
-
-
+            "3": avg_rating_dist(df),
+            #"4": ,
+            #"5": ,
+            #"6": ,
+            #"7": ,
+            #"8": ,
+            #"9": ,
+            #"10": ,
+            #"11": most_reviewd_books(df),
 
             }
-
 
 finished = False
 viewing = None
