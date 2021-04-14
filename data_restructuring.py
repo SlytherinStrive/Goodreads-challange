@@ -28,7 +28,7 @@ def csv_merger(new_filename, path=r'combinefiles/data', date_include=True):
             print("Invalid argument for date_include. Must be True or False")
     else:
         print("Invalid new file name - must be type(str)")
-csv_merger("10k_books")
+
 
 def merge_data_dicts(list_of_dictionaries):
     all_data = {}
