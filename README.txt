@@ -113,8 +113,8 @@ data_scraper.py
       (see hundred_link_grabber()) and then passes them into
       INPUT:
         start_range: Is a mandatory int input: it will run a single book list pagination if end_range=None.
-        end_range:   If an end range is entered it will get books lists from the start_range to end_range integers and
-                     the pagination's in between.
+        end_range:   If an end range is entered it will get books lists from the start_range to end_range integers
+                     and the pagination's in between.
       OUTPUT:
         python_list containing python dictionaries of book data, see example pseudo code below
         [{csv_headers:book_data}, {csv_headers:book_data}, {csv_headers:book_data}, {csv_headers:book_data}]
@@ -125,8 +125,10 @@ data_scraper.py
     ABOUT: hundred_link_grabber(pagination_url):
         This function takes a single url and gets the html with requests. It then creates a BeautifulSoup(!) object and searches
         it for urls linking directly to books.
-      INPUT: string; must be a complete url that goes to a page containing a list of books.
-      OUPUT: list; a list of strings that are urls to individual book pages
+      INPUT:
+        string; must be a complete url that goes to a page containing a list of books.
+      OUPUT:
+        list; a list of strings that are urls to individual book pages
 
     ABOUT: get_all_books(list_of_urls)
       This function gets scrapes data from a book page. It is mainly to be seen as a controller of the several 'get_data()'
@@ -139,23 +141,68 @@ data_scraper.py
         python_list containing python dictionaries of book data, see example  pseudo code below
               [{csv_headers:book_data}, {csv_headers:book_data}, {csv_headers:book_data}, {csv_headers:book_data}]
 
+    ABOUT: get_*(page_soup):
+        All functions starting with get_ are used to scrape a specific piece of data from a books webpage. They operate all operate
+        in the same way as described below.
+        INPUT:
+          BeautifulSoup object
+
+        OUTPUT:
+          A single piece of data as specified in the data_scraper.py OUTPUT information.
+
+  data_preprocessor.py
+  --------------------
+    INPUT  : requires a data set to operate
+    OUTPUT : a CSV with additional columns
+
+    What does it do?
+    ----------------
+    The data pre-processor is used to add useful columns to the dataset allowing greater analysis.
+
+
+  data_analyzer.py
+  -----------------
+    INPUT  : requires a data set in CSV format to operate
+    OUTPUT : graph data and visualizations that help with analysis
+
+
+    What does it do?
+    ----------------
+    The data analyzer runs a variety of graphs that display insights on the given data.
+
+
+  data_restructuring.py
+  ---------------------
+    INPUT: Function Specific see below
+    OUTPUT: Function Specific see below
+
+    What does it do?
+    ----------------
+    The data_restructuring file contains functions that help merge data sets together. They are imported into other parts of the project.
+
+    ABOUT: merge_data_dicts(list_of_dictionaries):
+      This function takes a list of dictionaries that have the same structure and merges the values of each dictionary into a single list
+      under the original keys.
+
+      INPUT:
+        list: containing dictionaries
+
+      OUTPUT:
+        dictionary: a single dictionary containing the multiple dictionary data passed in.
+
+
+    ABOUT: csv_merger(new_filename, path=r'data/combinefiles', date_include=True):
+      This function merges CSV's together
 
 
 
+  (*#*) Contributions
+  -------------------
+      (*1*)
+      (*2*)
+      (*3*)
+      (*4*)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-How to use: data_preprocessor.py
-
-How to use: data_scraper.py
+  (*!*) Imports & Thankyous
+  -------------------------
+  
