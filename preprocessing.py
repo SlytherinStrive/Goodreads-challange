@@ -19,8 +19,12 @@ def awards_cleaned(awards):
     return (awards.str.count(r"([0-9]{4})")).replace(np.nan, 0)
 
 #Calculate the normalized ratings
-def new_ratings(df):
-    df["mean_norm_ratings"] = normalise_mean(df.avg_rating)
+def min_max_normalise(ratings):
+    normalised = ((ratings - min(ratings)) / (max(ratings) - min(ratings)))
+    transform = ((normalised + 1) * 4.5) + 1
+    return transform
+
+
 
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
@@ -31,6 +35,7 @@ def preprocessing(csv_lock):
     df[['url', 'title', 'author', 'genres', 'awards', 'place']] = df[['url', 'title', 'author', 'genres', 'awards', 'place']].astype(str)
     ### Add new columns
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
+    df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
 
     print(df.isna().sum())
     print(df.info())
