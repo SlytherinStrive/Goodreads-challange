@@ -19,6 +19,8 @@ def min_max_norm(df):
     plt.show()
 min_max_norm(df)
 
+#kajkfdja
+
 # 6. Create one graph that represents in the same figure both `minmax_norm_rating` and `mean_norm_rating`distributions.
 def distributions(df):
     sns.histplot(data=df, x="normalise_mean", color="navy", label="Mean", kde=True)
