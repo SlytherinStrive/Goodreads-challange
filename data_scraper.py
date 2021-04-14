@@ -204,7 +204,7 @@ output: list - containing dictionaries with the books data from each url inputte
 def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
-    for i, book_url in enumerate(list_of_urls):
+    for i, book_url in enumerate(list_of_urls[0:1]):
         print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url)
         page_soup = BeautifulSoup(request.content,'html.parser')
@@ -269,7 +269,7 @@ def main_scraper(start_range, end_range=None):
         for i in range(start_range, end_range+1):
             try:
                 print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
-                list_url = URL_SETTING[:-1]+str(i)"
+                list_url = URL_SETTING[:-1]+str(i)
                 get_url_data = hundred_link_grabber(list_url)
                 all_urls.extend(get_url_data)
             except:
@@ -336,7 +336,7 @@ def command_line_interface():
             ## After all validations is complete, runs the scraper with the desired range of book lists
             books = main_scraper(start_input, end_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'combinefiles/data/10kscraped_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            df.to_csv(f'data/combinefiles/scrape_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
 
         # if valid n is selected do the following for a single page
@@ -353,7 +353,7 @@ def command_line_interface():
             # scrape data from the single page
             books = main_app(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'combinefiles/data/10kscrapedpages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/combinefiles/scrape_pages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("\n You must enter a 'y' or a 'n' to continue")

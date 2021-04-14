@@ -30,8 +30,6 @@ def min_max_normalise(ratings):
     transform = ((normalised + 1) * 4.5) + 1
     return transform
 
-
-
 def preprocessing(csv_lock):
     df = pd.read_csv(csv_lock)
     ### Clean Data
@@ -44,7 +42,7 @@ def preprocessing(csv_lock):
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
     print(df.isna().sum())
     print(df.info())
-    return df.to_csv(f"data/prepocessed_14th.csv")
+    return df.to_csv(f"data/prepocessed_10k.csv")
 
 
 if __name__ == "__main__":
