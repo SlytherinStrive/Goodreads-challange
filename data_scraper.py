@@ -3,7 +3,12 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 import numpy as np
-from logo import logo_printer
+from slytherin import logo_printer
+from data_restructuring import merge_data_dicts
+
+### to scrape different book lists change the url here.
+URL_SETTING  = "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1"
+
 
 #############################################################################
 ## Functions for getting column data from a book webpage
@@ -264,7 +269,7 @@ def main_scraper(start_range, end_range=None):
         for i in range(start_range, end_range+1):
             try:
                 print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
-                list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={i}"
+                list_url = URL_SETTING[:-1]+str(i)"
                 get_url_data = hundred_link_grabber(list_url)
                 all_urls.extend(get_url_data)
             except:
@@ -272,7 +277,7 @@ def main_scraper(start_range, end_range=None):
     else:
         try:
             print(f"Attempting to take 100 links. from pagination {start_range}- awaiting success confirmation")
-            list_url = f"https://www.goodreads.com/list/show/1.Best_Books_Ever?page={start_range}"
+            list_url = URL_SETTING[:-1]+str(i)
             get_url_data = hundred_link_grabber(list_url)
             all_urls.extend(get_url_data)
         except:
@@ -284,30 +289,11 @@ def main_scraper(start_range, end_range=None):
     return get_book_data
 
 
-#############################################################################
-## Used for merging all the book dictionaries into one for easy dataframe creation
-"""
-args  : list_of_dictionaries - a list of dictionaries containing
-                                book data.
-
-output: dictionary - all of the dictionary values merged into lists
-"""
-def merge_data_dicts(list_of_dictionaries):
-    all_data = {}
-    for dict in list_of_dictionaries:
-        for key, value in dict.items():
-            if key in all_data.keys():
-                current_data = all_data[key]
-                combined_data = current_data + value
-                all_data[key] = combined_data
-            else:
-                all_data[key] = value
-    return all_data
 
 
 #############################################################################
 ## THIS IS TERMINAL INTERFACE FOR SELECTING HOW MUCH TO SCRAPE
-def command_line_page_enter():
+def command_line_interface():
     logo_printer()
     ## Check if user wishes for a single list of books (100) or a range of lists (1-100)
     check_input = None
@@ -377,7 +363,7 @@ def command_line_page_enter():
 
 ### RUNS THE CLI
 if __name__ == "__main__":
-    command_line_page_enter()
+    command_line_interface()
 
 
 ### Helper functions
