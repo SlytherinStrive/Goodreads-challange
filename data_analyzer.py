@@ -13,10 +13,18 @@ print (f"Correlation between number of pages and rating is {round(corr_pages_rev
 
 
 
-# 4. Visualise the minmax_norm_rating distribution. (NOTE: THIS IS FOR NORMALIZED MEAN AND SHOULD CONVERTED tO MINMAX)
-sns.displot(df, x="normalise_mean",kind="kde", fill=True)
-plt.title('MinMax Normalization distribution graph', fontsize='13')
+# 4. Visualise the minmax_norm_rating distribution.
+sns.displot(df, x="minmax_norm_ratings", kde=True, fill=True)
+plt.title('MinMax Normalization distribution', fontsize='13')
 plt.xlabel('MinMax Distribution')
+plt.show()
+
+# 6. Create one graph that represents in the same figure both `minmax_norm_rating` and `mean_norm_rating`distributions.
+sns.histplot(data=df, x="normalise_mean", color="navy", label="Mean", kde=True)
+sns.histplot(data=df, x="minmax_norm_ratings", color="red", label="Min/Max", kde=True)
+plt.xlabel('Rating')
+plt.title('Min/Max and Mean Distributions', fontsize='13')
+plt.legend(loc=1)
 plt.show()
 
 # Graph most reviewed books
