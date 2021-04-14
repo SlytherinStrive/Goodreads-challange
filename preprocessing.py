@@ -42,11 +42,9 @@ def preprocessing(csv_lock):
     ### Add new columns
     df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
-
-
     print(df.isna().sum())
     print(df.info())
-    return df.to_csv(f"data/preprocess_complete_.csv")
+    return df.to_csv(f"data/prepocessed_14th.csv")
 
 
 if __name__ == "__main__":
