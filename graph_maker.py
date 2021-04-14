@@ -12,6 +12,12 @@ corr_pages_review = df.corr().loc['num_pages','num_ratings']
 print (f"Correlation between number of pages and rating is {round(corr_pages_review,5)}")
 
 
+
+# 4. Visualise the minmax_norm_rating distribution. (NOTE: THIS IS FOR NORMALIZED MEAN AND SHOULD CONVERTED tO MINMAX)
+sns.displot(df, x="normalise_mean",kind="kde", fill=True)
+plt.title('MinMax Normalization distribution graph', fontsize='13')
+plt.xlabel('MinMax')
+
 # Graph most reviewed books
 def most_reviewd_books(df):
     mostly_reviewed = df.sort_values(by='num_reviews', ascending=False) # Sorting by number of reviews
