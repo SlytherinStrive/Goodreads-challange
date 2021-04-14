@@ -5,7 +5,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.preprocessing import StandardScaler
 
-df = pd.read_csv("data/preprocess_complete.csv")
+df = pd.read_csv("data/prepocessed_14th.csv")
 
 # 2. Correlation between Number of Reviews and Number of Pages
 corr_pages_review = df.corr().loc['num_pages','num_ratings']
@@ -26,6 +26,25 @@ plt.xlabel('Rating')
 plt.title('Min/Max and Mean Distributions', fontsize='13')
 plt.legend(loc=1)
 plt.show()
+
+#8. Visualize the `awards` distribution in a **boxplot** and **aggregated bars**. Decide which of these representations gives us more information and in which cases they should be used.
+# a. boxplot
+df[['award_count']].plot.box(vert=False, color='blue')
+plt.title('Number of Awards', fontsize='13')
+plt.show
+# b.aggregate bars of total awards by books
+most_awards = df.sort_values(by='award_count', ascending=False)
+most_awards=  most_awards[['title','award_count']]
+most_awards = most_awards.head(20)
+
+plt.figure(figsize=(10,5))
+sns.barplot(y='title', x='award_count', data = most_awards, palette="Paired")
+plt.title('15 Most Awarded Books', fontsize='13')
+plt.xlabel('Number of Awards')
+plt.ylabel('Book Title')
+plt.show()
+
+
 
 # Graph most reviewed books
 def most_reviewd_books(df):
