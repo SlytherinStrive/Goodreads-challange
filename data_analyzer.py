@@ -66,7 +66,7 @@ most_awards = most_awards.head(20)
 
 def agg_awards(df):
     plt.figure(figsize=(10,5))
-    sns.barplot(y='title', x='award_count', data = most_awards, palette="Paired")
+    sns.barplot(y='title', x='award_count', data =most_awards, palette="Paired")
     plt.title('15 Most Awarded Books', fontsize='13')
     plt.xlabel('Number of Awards')
     plt.ylabel('Book Title')
