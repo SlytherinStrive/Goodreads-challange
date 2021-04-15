@@ -78,9 +78,11 @@ agg_awards(df)
 #- Is there another representation that displays this in a more clear manner?
 #- Optional: Can you plot a best fit linear regression line to represent the relationship?
 def cor_award_minmax (df):
-    sns.regplot(x = "award_count", y = "minmax_norm_ratings", line_kws={"color": "red"}, data = df)
+    g1=sns.regplot(x = "award_count", y = "minmax_norm_ratings", line_kws={"color": "red"}, data = df, scatter_kws={'edgecolor':'white'})
+    g1.figure.set_size_inches(15,10)
     plt.xlim(0,20)
-    plt.title('Correlation Between Awards Number and Min/Max Normalised Ratings', fontsize='12')
+    plt.ylim(6.5,10)
+    plt.title('Correlation Between Awards Number and Min/Max Normalised Ratings', fontsize='20')
     plt.xlabel('Number of Awards')
     plt.ylabel('Min/Max Normalization')
     plt.show()
