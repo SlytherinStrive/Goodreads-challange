@@ -19,7 +19,7 @@ def pages_vs_ratings_scat(df):
 corr_pages_review = df.corr().loc['num_pages','num_ratings']
 print (f"Correlation between number of pages and rating is {round(corr_pages_review,5)}")
 
-# 3. 3. Visualise the avg_rating distribution.
+# 3. Visualise the avg_rating distribution.
 def avg_rating_dist(df):
     plt.figure(figsize=(12,5))
     sns.displot(df, x="avg_rating", kde=True, fill=True)
@@ -57,7 +57,7 @@ distributions(df)
 def box_awards(df):
     df[['award_count']].plot.box(vert=False, color='blue')
     plt.title('Number of Awards', fontsize='13')
-    plt.show
+    plt.show()
 
 # b.aggregate bars of total awards by books
 most_awards = df.sort_values(by='award_count', ascending=False)
@@ -66,7 +66,7 @@ most_awards = most_awards.head(20)
 
 def agg_awards(df):
     plt.figure(figsize=(10,5))
-    sns.barplot(y='title', x='award_count', data =most_awards, palette="Paired")
+    sns.barplot(y='title', x='award_count', data = most_awards, palette="Paired")
     plt.title('15 Most Awarded Books', fontsize='13')
     plt.xlabel('Number of Awards')
     plt.ylabel('Book Title')
@@ -78,13 +78,33 @@ agg_awards(df)
 #- Is there another representation that displays this in a more clear manner?
 #- Optional: Can you plot a best fit linear regression line to represent the relationship?
 def cor_award_minmax (df):
-    sns.regplot(x = "award_count", y = "minmax_norm_ratings", line_kws={"color": "red"}, data = df)
+    g1=sns.regplot(x = "award_count", y = "minmax_norm_ratings", line_kws={"color": "red"}, data = df, scatter_kws={'edgecolor':'white'})
+    g1.figure.set_size_inches(15,10)
     plt.xlim(0,20)
-    plt.title('Correlation Between Awards Number and Min/Max Normalised Ratings', fontsize='12')
+    plt.ylim(6.5,10)
+    plt.title('Correlation Between Awards Number and Min/Max Normalised Ratings', fontsize='20')
     plt.xlabel('Number of Awards')
     plt.ylabel('Min/Max Normalization')
     plt.show()
 cor_award_minmax (df)
+
+
+#Correlation between page numbers and rankings (normalise_mean)
+def corr_page_rank(df):
+    g=sns.regplot(x = "num_pages", y = "normalise_mean",line_kws={"color": "red"}, data = df, scatter_kws={'edgecolor':'white'})
+    g.figure.set_size_inches(15,10)
+    plt.xlim(-0,1000)
+    plt.ylim(3.5,7)
+    plt.title('Correlation Between Page Numbers and Ranking', fontsize='20')
+    plt.xlabel('Page numbers')
+    plt.ylabel('Rank')
+    plt.show()
+    corr_pages_review = df.corr().loc["num_pages","normalise_mean"]
+    print (f"Correlation between number of pages and rating is {round(corr_pages_review,4)}")
+corr_page_rank(df)
+
+
+
 
 # Graph most reviewed books
 def most_reviewed_books(df):
