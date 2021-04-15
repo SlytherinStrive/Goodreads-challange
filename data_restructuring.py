@@ -45,4 +45,4 @@ def merge_data_dicts(list_of_dictionaries):
     return all_data
 
 
-csv_merger("15th_1k", path='data/data15th',date_include=False)
+csv_merger("10k_set", path='data/data15th', date_include=False)

@@ -42,9 +42,9 @@ def preprocessing(csv_lock):
     df['normalise_mean'] = normalise_mean(df['avg_rating'])
     print(df.isna().sum())
     print(df.info())
-    return df.to_csv(f"data/1k_15th_preprocessed.csv")
+    return df.to_csv(f"data/10k_preprocessed.csv")
 
 
 if __name__ == "__main__":
-    load_csv = "data/15th_1k.csv"
+    load_csv = "data/10k_set.csv"
     preprocessing(load_csv)
