@@ -187,11 +187,25 @@ def hundred_link_grabber(pagination_url):
     soup = BeautifulSoup(page.content, 'html.parser')
     links_section = soup.find_all('a', class_="bookTitle", href=True)
     final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
-    len_links = len(final_links)
-    print(f"Succesfully generated {len_links}")
-    return final_links
+    score_divs = soup.find_all('div', style="margin-top: 5px")
+    final_scores = []
+    good_read_score = np.nan
+    score_votes = np.nan
+    for book in score_divs:
+        a_s =  book.find_all('a')
+        a_s_text = [a.get_text() for a in a_s ]
+        a_s_int = [int("".join([i for i in g if i.isnumeric()])) for g in a_s_text]
+        final_scores.append(a_s_int)
 
+    all_pagi_data =[]
+    for link, scores in zip(final_links, final_scores):
+        all_pagi_data.append((link, scores[0], scores[1]))
 
+    len_links = len(all_pagi_data)
+    print(f"Succesfully generated {len_links} from all_pagi_data")
+    return all_pagi_data
+
+#hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
 #############################################################################
 ## Get data from individual book pages
 """
@@ -204,9 +218,9 @@ output: list - containing dictionaries with the books data from each url inputte
 def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
-    for i, book_url in enumerate(list_of_urls[0:1]):
+    for i, book_url in enumerate(list_of_urls):
         print(f"Working on url: {book_url}.. {i}/{run_total}")
-        request = requests.get(book_url)
+        request = requests.get(book_url[0])
         page_soup = BeautifulSoup(request.content,'html.parser')
         book_id = get_book_id(page_soup)
         title = get_title(page_soup)
@@ -222,19 +236,21 @@ def get_all_books(list_of_urls):
         award_count = get_awards_count(page_soup)
         place = get_place(page_soup)
         a_book = {
-            "url": [book_url],
+            "url": [book_url[0]],
             "book_id":[book_id],
             "title":[title],
-            "award_count": [award_count],
             "author" :[author],
+            "good_read_score": [book_url[1]],
+            "good_read_votes": [book_url[2]],
             "avg_rating": [avg_rating],
-            "num_reviews" : [num_ratings],
+            "num_reviews" : [num_reviews],
             "num_ratings" : [num_ratings],
             "num_pages" : [num_pages],
             "original_publish_year" : [original_publish_year],
             "series" :[series],
             "genres" : [genres],
             "awards" : [awards],
+            "award_count": [award_count],
             "place" : [place]}
         pd_data.append(a_book)
     return pd_data
@@ -275,13 +291,14 @@ def main_scraper(start_range, end_range=None):
             except:
                 print(f"***FAILED*** to take links on iteration {i}")
     else:
-        try:
-            print(f"Attempting to take 100 links. from pagination {start_range}- awaiting success confirmation")
-            list_url = URL_SETTING[:-1]+str(i)
-            get_url_data = hundred_link_grabber(list_url)
-            all_urls.extend(get_url_data)
-        except:
-            print(f"***FAILED*** to take links on pagination {start_range}")
+    #try:
+        print(f"Attempting to take 100 links. from pagination {start_range}- awaiting success confirmation")
+        list_url = URL_SETTING
+        print(list_url)
+        get_url_data = hundred_link_grabber(list_url)
+        all_urls.extend(get_url_data)
+    #except:
+        print(f"***FAILED*** to take links on pagination {start_range}")
 
     total_urls = len(all_urls)
     print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
@@ -336,7 +353,7 @@ def command_line_interface():
             ## After all validations is complete, runs the scraper with the desired range of book lists
             books = main_scraper(start_input, end_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/combinefiles/scrape_range{start_input}_to_{end_input}.csv', index = False, header=True)
+            df.to_csv(f'data/data15th/scrape_range{start_input}_to_{end_input}.csv', index = False, header=True)
             break
 
         # if valid n is selected do the following for a single page
@@ -351,9 +368,9 @@ def command_line_interface():
                     page_input = None
 
             # scrape data from the single page
-            books = main_app(page_input)
+            books = main_scraper(page_input)
             df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/combinefiles/scrape_pages_{page_input}.csv', index = False, header=True)
+            df.to_csv(f'data/data15th/scrape_pages_{page_input}.csv', index = False, header=True)
             break
         else:
             print("\n You must enter a 'y' or a 'n' to continue")

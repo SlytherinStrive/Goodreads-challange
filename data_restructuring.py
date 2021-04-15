@@ -21,9 +21,11 @@ def csv_merger(new_filename, path=r'combinefiles/data', date_include=True):
         ## Export all Combined CSV's to directory
         if date_include == True:
             date_insert = "_" + "".join([num for num in str(dt.date.today()) if num.isnumeric()])
-            df.to_csv(new_filename+date_insert, index=False, header=True)
+            df.to_csv("data/"+new_filename+date_insert+".csv", index=False, header=True)
+            print("Merge succuessful")
         elif date_include == False:
-            df.to_csv(new_filename+date_insert, index=False, header=True)
+            df.to_csv("data/"+new_filename+".csv", index=False, header=True)
+            print("Merge succuessful")
         else:
             print("Invalid argument for date_include. Must be True or False")
     else:
@@ -41,3 +43,6 @@ def merge_data_dicts(list_of_dictionaries):
             else:
                 all_data[key] = value
     return all_data
+
+
+csv_merger("15th_1k", path='data/data15th',date_include=False)
