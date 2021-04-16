@@ -237,8 +237,8 @@ def author_alias(adf):
 
     # Draw ylabels
     ax.set_rlabel_position(2)
-    plt.yticks([20,40,60,80,100], color="grey", size=7)
-    plt.ylim(0,100)
+    #plt.yticks([20,40,60,80,100], color="grey", size=7)
+    plt.ylim(40,85)
     plt.xticks(fontsize="x-large")
     plt.title("Author Full Names Vs Use of Initials\n", fontsize="xx-large")
     # ------- PART 2: Add plots
