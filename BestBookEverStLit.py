@@ -7,7 +7,7 @@ import seaborn as sns
 
 
 st.title("How To Write The Best Book Ever")
-st.title("Author: Gamar Fargab")
+st.title("Author: G.F.M Fargab")
 
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #This line removed the error******************************
