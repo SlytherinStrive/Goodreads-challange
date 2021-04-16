@@ -12,7 +12,10 @@ st.title("Author: Gamar Fargab")
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #This line removed the error******************************
 
-df = pd.read_csv("data/prepocessed_14th.csv")
+df = pd.read_csv("data/9745_greatest_books_ever.csv")
+st.dataframe(df)
+
+
 
 # 2. Correlation between Number of Reviews and Number of Pages
 corr_pages_review = df.corr().loc['num_pages','num_ratings']
@@ -20,7 +23,7 @@ print (f"Correlation between number of pages and rating is {round(corr_pages_rev
 
 # ****************************************
 """
-The Minmax Normalised Rating Distribution. 
+The Minmax Normalised Rating Distribution.
 """
 # ****************************************
 # 4. Visualise the minmax_norm_rating distribution.
@@ -160,8 +163,4 @@ input_dict = {
             }
 
 
-finished = False
-viewing = None
-
 st.write("Check out the repository: [link](https://github.com/SlytherinStrive)")
-

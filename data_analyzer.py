@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from math import pi
 
 df = pd.read_csv("data/9745_greatest_books_ever.csv")
+ag = pd.read_csv("data/old_datasets/1k_15th_preprocessed.csv")
 # 1. Scatter plot between Number of ratings and Number of Pages
 def pages_vs_ratings_scat(df):
     plt.figure(figsize=(12,5))
@@ -124,7 +125,59 @@ def most_reviewed_books(df):
     return plt.show()
 #most_reviewed_books(df)
 
+# libraries
+def genre_rating_awards_bubble(df):
+    gab = df[[
+            'avg_rating', "award_count",
+            'Audiobook',
+            "Fiction",
+            "Fantasy",
+            "Young Adult",
+            "Romance",
+            "Historical",
+            "Contemporary",
+            "Novels",
+            "Classics",
+            "Audiobook",
+            "Literature",
+            "Mystery",
+            "Adult",
+            "Adventure",
+            "Historical Fiction",
+            "Paranormal",
+            "Science Fiction"]]
 
+    x=gab.groupby([['avg_rating', "award_count"]]).agg({
+                                                    'Audiobook': lambda x: np.mean(x==True),
+                                                    "Fiction":lambda x: np.mean(x==True),
+                                                    "Fantasy":lambda x: np.mean(x==True),
+                                                    "Young Adult":lambda x: np.mean(x==True),
+                                                    "Romance":lambda x: np.mean(x==True),
+                                                    "Historical":lambda x: np.mean(x==True),
+                                                    "Contemporary":lambda x: np.mean(x==True),
+                                                    "Novels":lambda x: np.mean(x==True),
+                                                    "Classics":lambda x: np.mean(x==True),
+                                                    "Audiobook":lambda x: np.mean(x==True),
+                                                    "Literature":lambda x: np.mean(x==True),
+                                                    "Mystery":lambda x: np.mean(x==True),
+                                                    "Adult":lambda x: np.mean(x==True),
+                                                    "Adventure":lambda x: np.mean(x==True),
+                                                    "Historical Fiction":lambda x: np.mean(x==True),
+                                                    "Paranormal":lambda x: np.mean(x==True),
+                                                    "Science Fiction":lambda x: np.mean(x==True)}).unstack()
+
+
+
+    print(x)
+
+#genre_rating_awards_bubble(df)
+
+
+# use the scatterplot function to build the bubble map
+# sns.scatterplot(data=data, x="gdpPercap", y="lifeExp", size="pop", legend=False, sizes=(20, 2000))
+#
+# # show the graph
+# plt.show()
 
 ########## Custom min_max_normalise to 100
 def min_max_normalise(ratings):
@@ -132,7 +185,7 @@ def min_max_normalise(ratings):
     transform = ((normalised + 1) * 49.5) + 1
     return transform
 # Proves authors are better off using initals
-def page_numbers_by_score_for_genres(adf):
+def author_alias(adf):
     plt.figure(figsize=(12,5))
     uses_initials = adf[adf['author'].str.contains(".", regex=False)]
     no_initials = adf[~adf['author'].str.contains(".", regex=False)]
@@ -207,7 +260,8 @@ def page_numbers_by_score_for_genres(adf):
 
     # Add legend
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize="x-large")
-
+    plt.savefig('author_alias.png')
     # Show the graph
     return plt.show()
 #page_numbers_by_score_for_genres(df)
+author_alias(ag)
