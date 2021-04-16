@@ -239,7 +239,7 @@ def author_alias(adf):
     ax.set_rlabel_position(2)
     #plt.yticks([20,40,60,80,100], color="grey", size=7)
     plt.ylim(40,85)
-    plt.xticks(fontsize="x-large")
+
     plt.title("Author Full Names Vs Use of Initials\n", fontsize="xx-large")
     # ------- PART 2: Add plots
 
@@ -257,6 +257,7 @@ def author_alias(adf):
     values += values[:1]
     ax.plot(angles, values, linewidth=1, linestyle='solid', label="Authors who use full name")
     ax.fill(angles, values, 'r', alpha=0.1)
+    ax.axes.yaxis.set_ticklabels([])
 
     # Add legend
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize="x-large")
