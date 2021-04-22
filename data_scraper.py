@@ -133,7 +133,7 @@ def get_awards_count(page_soup):
         awards = awards_section.find_all('a', class_="award")
         main_awards = [award.get_text().strip() for award in awards]
         str_main_awards =len((", ".join(main_awards)).split(',')) #len(main_awards)
-        print(str_main_awards)
+
         return str_main_awards
     except:
         print("Oh no get_awards_count failed - assuming 0")
@@ -188,7 +188,7 @@ def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
     for i, book_url in enumerate(list_of_urls):
-        print(f"Working on url: {book_url}.. {i}/{run_total}")
+        #print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url[0])
         page_soup = BeautifulSoup(request.content,'html.parser')
         book_id = get_book_id(page_soup)
@@ -223,7 +223,7 @@ def get_all_books(list_of_urls):
             "place" : [place]}
         print(f"Succesully gathered: {title} from URL: {book_url}")
         pd_data.append(a_book)
-        print(a_book)
+
     return pd_data
 
 def hundred_link_grabber(pagination_url):
@@ -255,15 +255,11 @@ def range_scraper(start_range, end_range):
     all_urls = []
 
     for i in range(start_range, end_range+1):
-        #print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
         list_url = URL_SETTING[1][:-1]+str(i)
         get_url_data = hundred_link_grabber(list_url)
         all_urls.extend(get_url_data)
-        #print(f"***FAILED*** to take links on iteration {i}")
 
-        #print("Failed")
     total_urls = len(all_urls)
-    #print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
     get_book_data = get_all_books(all_urls)
     return get_book_data
 
@@ -311,7 +307,6 @@ def genre_column_maker(dataframe):
 
     df.drop([f"genre_{i}" for i in range(0,y)], inplace=True, axis=1)
 
-    print(df.info())
 
     return df
 
@@ -352,7 +347,6 @@ def data_settings():
     for key, value in data_setting_dict.items():
         setting_pick = None
         while setting_pick == None:
-            print(value[0])
             ui = input("\n Enter 'y' for Yes or 'n' for No >> ")
             try:
                 if ui.lower() == "y":
@@ -450,7 +444,8 @@ def begin_scraper():
 
     # preprocessing
     scrape_end = time.perf_counter()
-    print(f"You collected all the data in  {round(scrape_end-scrape_start, 2)}")
+    c_time = round(scrape_end-scrape_start, 2)
+    print(f"You collected all the data in  {c_time)}")
     return run_preprocessor(all_scraper_results)
 
 
