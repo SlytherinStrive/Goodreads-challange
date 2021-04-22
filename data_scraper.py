@@ -17,11 +17,15 @@ import time
 book_list_dict = {1: ("Best books ever (*)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1"),
                 2: ("Books everyone should read atleast once", "https://www.goodreads.com/list/show/264.Books_That_Everyone_Should_Read_At_Least_Once?page=1"),
                 3: ("Books that should be made into movies", "https://www.goodreads.com/list/show/1043.Books_That_Should_Be_Made_Into_Movies?page=1"),
-                4: ("Best books of the 20th century", "https://www.goodreads.com/list/show/6.Best_Books_of_the_20th_Century?page=1")}
+                4: ("Best books of the 20th century", "https://www.goodreads.com/list/show/6.Best_Books_of_the_20th_Century?page=1"),
+                5: ("Best young adult books", "https://www.goodreads.com/list/show/43.Best_Young_Adult_Books?page=1"),
+                6: ("Books you wish more people new about", "https://www.goodreads.com/list/show/8166.Books_You_Wish_More_People_Knew_About?page=1"),
+                
+                }
 
 
 data_setting_dict = {1: ["\nWould you like us to preprocess the books adding addtional data?",  True]}
-URL_SETTING = ("Best books ever (*Used for our analysis)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+URL_SETTING = ("Best books ever (*)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
 quantity_setting_dict = {"Quantity": None,
                         "Instances": None}
 
@@ -49,7 +53,6 @@ def get_author(page_soup):
         print("Oh no get_author failed")
         return np.nan
 
-## Function to get the book title
 def get_title(page_soup):
     try:
         title = page_soup.find('h1', id="bookTitle").get_text().strip()
@@ -59,7 +62,6 @@ def get_title(page_soup):
         return np.nan
 
 def get_number_of_pages(page_soup):
-    # Missing data probelem
     try:
         number_of_pages_unclean = page_soup.find('span', itemprop="numberOfPages").get_text()
         number_of_pages = int("".join([char for char in number_of_pages_unclean if char.isnumeric()]))
@@ -68,7 +70,6 @@ def get_number_of_pages(page_soup):
         print("Oh no get_number_of_pages failed")
         return np.nan
 
-# Number of ratings
 def get_number_of_ratings(page_soup):
     try:
         number_of_ratings_unclean = page_soup.find('meta', itemprop="ratingCount")
@@ -78,7 +79,6 @@ def get_number_of_ratings(page_soup):
         print("Oh no get_number_of_ratings failed")
         return np.nan
 
-# First publication year
 def get_first_published(page_soup):
     try:
         details_section = page_soup.find('div', id="details")
@@ -100,7 +100,6 @@ def get_first_published(page_soup):
             print("Second get_first_published failed, giving nan value")
             return np.nan
 
-# Is the book is part of series (True/False)
 def get_is_series(page_soup):
     try:
         series_section = page_soup.find('h2', id="bookSeries")
@@ -113,7 +112,6 @@ def get_is_series(page_soup):
         print("Get series had no data- assuming False")
         return False
 
-# List of awards recieved
 def get_awards(page_soup):
     try:
         awards_section = page_soup.find('div', itemprop="awards")
@@ -126,7 +124,6 @@ def get_awards(page_soup):
         print("Oh no get_awards failed- assuming 0 awards")
         return np.nan
 
-## Get count of awards
 def get_awards_count(page_soup):
     try:
         awards_section = page_soup.find('div', itemprop="awards")
@@ -139,7 +136,6 @@ def get_awards_count(page_soup):
         print("Oh no get_awards_count failed - assuming 0")
         return 0
 
-# Genre of the book
 def get_genres(page_soup):
     try:
         genre_list_unclean = page_soup.find_all('a', class_="actionLinkLite bookPageGenreLink")
@@ -150,7 +146,6 @@ def get_genres(page_soup):
         print("Oh no get_genres failed")
         return np.nan
 
-# Place (Setting)
 def get_place(page_soup):
     try:
         get_place=page_soup.select('a[href*="/places"]')
@@ -162,7 +157,6 @@ def get_place(page_soup):
         print("Oh no get_place failed")
         return np.nan
 
-# Getting number of reviews
 def get_num_reviews(page_soup):
     try:
         get_num_unclean=page_soup.find('meta',itemprop="reviewCount")
@@ -172,7 +166,6 @@ def get_num_reviews(page_soup):
         print("Oh no get_num_reviews failed")
         return np.nan
 
-#Getting average score
 def get_avg(page_soup):
     try:
         get_avg=float(page_soup.find('span',itemprop="ratingValue").get_text())
@@ -300,14 +293,10 @@ def genre_column_maker(dataframe):
     #################################################################################
     # Make columns with genre names and map true or false if book contains that genre
     #################################################################################
-
     for genre in genre_names:
         df[genre] = df['genres'].str.contains(genre)
-        #df[genre] = df[genre].map({True: 'Yes', False: 'No'})
 
     df.drop([f"genre_{i}" for i in range(0,y)], inplace=True, axis=1)
-
-
     return df
 
 ###############################################################################################
@@ -409,9 +398,6 @@ def quantity_setter():
 
     return begin_scraper()
 
-
-
-
 ## Start the scraper.
 def begin_scraper():
     scrape_start = time.perf_counter()
@@ -438,9 +424,6 @@ def begin_scraper():
 
     for scraper in scraper_future_results:
         all_scraper_results.extend(scraper.result())
-
-
-    # backup split data
 
     # preprocessing
     scrape_end = time.perf_counter()
