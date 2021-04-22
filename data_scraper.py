@@ -445,7 +445,7 @@ def begin_scraper():
     # preprocessing
     scrape_end = time.perf_counter()
     c_time = round(scrape_end-scrape_start, 2)
-    print(f"You collected all the data in  {c_time)}")
+    print(f"You collected all the data in  {c_time}")
     return run_preprocessor(all_scraper_results)
 
 
