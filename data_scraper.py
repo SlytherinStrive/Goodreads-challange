@@ -319,6 +319,8 @@ def genre_column_maker(dataframe):
 ###############################################################################################
 ### COMMAND LINE INTERFACE FUNCTIONS
 
+
+### Select the book list you want to scrape
 def start_menu():
     logo_printer()
     print("Welcome to the good reads book data scraper")
@@ -339,6 +341,7 @@ def start_menu():
     NEW_FILE_NAME += "".join([c for c in book_list_dict[type_pick][0] if c.isalnum()])
     return data_settings()
 
+## Select if you want to preprocess the scraped data
 def data_settings():
     print("\n**************************************************")
     print(" DATA TYPE SETTINGS")
@@ -365,6 +368,7 @@ def data_settings():
     print("Thanks for confirming the settings ")
     return quantity_setter()
 
+## Select if you want to run multiplem isntances
 def quantity_setter():
     print("\n**************************************************")
     print(" BOOK QUANTIY SETTINGS")
@@ -411,6 +415,10 @@ def quantity_setter():
 
     return begin_scraper()
 
+
+
+
+## Start the scraper.
 def begin_scraper():
     scrape_start = time.perf_counter()
     pagination_total = int(quantity_setting_dict['Quantity'] / 100)
