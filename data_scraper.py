@@ -17,7 +17,7 @@ book_list_dict = {1: ("Best books ever (*)", "https://www.goodreads.com/list/sho
                 4: ("Best books of the 20th century", "https://www.goodreads.com/list/show/6.Best_Books_of_the_20th_Century?page=1")}
 
 
-data_setting_dict = {1: ["\nWould you like us to preprocess the books adding addtional data?",  True],}
+data_setting_dict = {1: ["\nWould you like us to preprocess the books adding addtional data?",  True]}
 URL_SETTING = ("Best books ever (*Used for our analysis)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
 quantity_setting_dict = {"Quantity": None,
                         "Instances": None}
@@ -346,6 +346,7 @@ def data_settings():
     for key, value in data_setting_dict.items():
         setting_pick = None
         while setting_pick == None:
+            print(value[0])
             ui = input("\n Enter 'y' for Yes or 'n' for No >> ")
             try:
                 if ui.lower() == "y":
