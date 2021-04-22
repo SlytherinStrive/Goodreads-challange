@@ -20,7 +20,7 @@ book_list_dict = {1: ("Best books ever (*)", "https://www.goodreads.com/list/sho
                 4: ("Best books of the 20th century", "https://www.goodreads.com/list/show/6.Best_Books_of_the_20th_Century?page=1"),
                 5: ("Best young adult books", "https://www.goodreads.com/list/show/43.Best_Young_Adult_Books?page=1"),
                 6: ("Books you wish more people new about", "https://www.goodreads.com/list/show/8166.Books_You_Wish_More_People_Knew_About?page=1"),
-                
+
                 }
 
 
@@ -336,6 +336,7 @@ def data_settings():
     for key, value in data_setting_dict.items():
         setting_pick = None
         while setting_pick == None:
+            print(value[0])
             ui = input("\n Enter 'y' for Yes or 'n' for No >> ")
             try:
                 if ui.lower() == "y":
