@@ -184,7 +184,7 @@ def get_avg(page_soup):
 def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
-    for i, book_url in enumerate(list_of_urls[:1]):
+    for i, book_url in enumerate(list_of_urls):
         print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url[0])
         page_soup = BeautifulSoup(request.content,'html.parser')
