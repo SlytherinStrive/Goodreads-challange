@@ -447,7 +447,6 @@ def begin_scraper():
 
 
 def run_preprocessor(results):
-
     if data_setting_dict[1][1] == True:
         all_books = merge_data_dicts(results)
         df = pd.DataFrame(all_books)
@@ -455,17 +454,13 @@ def run_preprocessor(results):
         df.to_csv(f"data/{NEW_FILE_NAME}_no_pp.csv")
         df = preprocessing(f"data/{NEW_FILE_NAME}_no_pp.csv")
         df.to_csv(f"data/{NEW_FILE_NAME}_with_pp.csv")
-    print(f"Thankyou succesfully sraped and saved to data/{NEW_FILE_NAME}_with_pp.csv")
+        print(f"Thankyou succesfully sraped and saved to data/{NEW_FILE_NAME}_with_pp.csv")
+    else:
+        all_books = merge_data_dicts(results)
+        df = pd.DataFrame(all_books)
+        df.to_csv(f"data/{NEW_FILE_NAME}_no_pp.csv")
+        print(f"Thankyou succesfully sraped and saved to data/{NEW_FILE_NAME}_no_pp.csv")
     print("Closing scraper")
-
-
-
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
