@@ -7,6 +7,9 @@ import concurrent.futures
 import requests
 from data_restructuring import merge_data_dicts
 from data_preprocessing import *
+import time
+
+
 
 ###############################################################################################
 ###############################################################################################
@@ -409,6 +412,7 @@ def quantity_setter():
     return begin_scraper()
 
 def begin_scraper():
+    scrape_start = time.perf_counter()
     pagination_total = int(quantity_setting_dict['Quantity'] / 100)
     scraper_total = quantity_setting_dict['Instances']
     pages_per_process = []
@@ -437,6 +441,8 @@ def begin_scraper():
     # backup split data
 
     # preprocessing
+    scrape_end = time.perf_counter()
+    print(f"You collected all the data in  {round(scrape_end-scrape_start, 2)}")
     return run_preprocessor(all_scraper_results)
 
 
