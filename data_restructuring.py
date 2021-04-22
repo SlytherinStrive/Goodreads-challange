@@ -35,7 +35,6 @@ def csv_merger(new_filename, path=r'combinefiles/data', date_include=True):
 def merge_data_dicts(list_of_dictionaries):
     all_data = {}
     for dict in list_of_dictionaries:
-        print(dict)
         for key, value in dict.items():
             if key in all_data.keys():
                 current_data = all_data[key]
@@ -44,6 +43,3 @@ def merge_data_dicts(list_of_dictionaries):
             else:
                 all_data[key] = value
     return all_data
-
-
-csv_merger("10k_set", path='data/data15th', date_include=False)
