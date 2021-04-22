@@ -393,11 +393,11 @@ def quantity_setter():
     print("The more you run the faster data will acquire. A maximum of 20 can be entered.")
     print("The higher the chosen quantity of scrapers the greater decrease in system performance.")
     print("There is also a possibility that the host website may prevent you from making too many requests.")
+    max_scrapers = quantity_pick // 100
     while scraper_instance_pick == None:
-        scraper_max = min(quantity_pick / 100, 20)
-        ui = input("\n Enter the quantiy of scrapers to run (min:1, max:20) >> ")
+        ui = input(f"\n Enter the quantiy of scrapers to run (min:1, max:{max_scrapers}) >> ")
         try:
-            if int(ui) >=1 and int(ui)<=20:
+            if int(ui) >=1 and int(ui)<=max_scrapers:
                 scraper_instance_pick = int(ui)
             else:
                 print("Invalid quantity, try again")
