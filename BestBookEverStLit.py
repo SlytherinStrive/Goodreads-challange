@@ -4,17 +4,57 @@ import pandas as pd
 import argparse as ap
 import matplotlib.pyplot as plt
 import seaborn as sns
+import base64
 
 
 st.title("How To Write The Best Book Ever")
+
+LOGO_IMAGE = "Number1.jpg"
+
+st.markdown(
+    """
+    <style>
+    .container {
+        display: flex;
+    }
+    .logo-text {
+        font-weight:700 !important;
+        font-size:50px !important;
+        color: #f9a01b !important;
+        padding-top: 75px !important;
+    }
+    .logo-img {
+        float:right;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    f"""
+    <div class="container">
+        <img class="logo-img" src="data:image/jpg;base64,{base64.b64encode(open(LOGO_IMAGE, "rb").read()).decode()}">
+        <p class="logo-text"> "BestSeller"!</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("Author: G.F.M Fargab")
 
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #This line removed the error******************************
 
+<<<<<<< Updated upstream
 df = pd.read_csv("data/9745_greatest_books_ever.csv")
 st.dataframe(df)
 
+=======
+# df = pd.read_csv("data/9745_greatest_books_ever.csv")  # 3
+df = pd.read_csv("data/old_datasets/1k_15th_preprocessed.csv")  # 2
+# df = pd.read_csv("data/prepocessed_14th.csv")  # 1
+>>>>>>> Stashed changes
 
 
 # 2. Correlation between Number of Reviews and Number of Pages
@@ -164,3 +204,14 @@ input_dict = {
 
 
 st.write("Check out the repository: [link](https://github.com/SlytherinStrive)")
+<<<<<<< Updated upstream
+=======
+
+st.write("Here is the Dataframe used in the creation of the graphs: ")
+df
+
+st.write("The Best Ever Book Team: ")
+st.write("Marks GitHub : [link](https://github.com/aimwps)")
+st.write("Gabriels GitHub : [link](https://github.com/Calypso25)")
+st.write("Farrukhs GitHub : [link](https://github.com/fbulbulov)")
+>>>>>>> Stashed changes
