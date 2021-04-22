@@ -38,11 +38,9 @@ def preprocessing(csv_lock):
     df[['num_pages', 'num_ratings', 'num_reviews']] = df[['num_pages', 'num_ratings', 'num_reviews']].astype(int)
     df[['url', 'title', 'author', 'genres', 'awards', 'place']] = df[['url', 'title', 'author', 'genres', 'awards', 'place']].astype(str)
     ### Add new columns
-    df["minmax_norm_ratings"] = min_max_normalise(df['avg_rating'])
-    df['normalise_mean'] = normalise_mean(df['avg_rating'])
-    print(df.isna().sum())
-    print(df.info())
-    return df.to_csv(f"data/10k_preprocessed.csv")
+    df["MINMAX/norm Average Rating"] = min_max_normalise(df['avg_rating'])
+    df['MEAN/norm Average Rating'] = normalise_mean(df['avg_rating'])
+    return df
 
 
 if __name__ == "__main__":

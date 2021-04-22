@@ -103,7 +103,7 @@ def award_column_maker(dataset):
     final.to_csv('award_categories.csv')
 
 
-def genre_column_maker(dataset):
+def genre_column_maker():
     df = pd.read_csv(dataset)
 
     ## Splits all genres into different columns
@@ -158,5 +158,6 @@ df =  pd.read_csv(dataset)
 
 
 def audio_book(data):
-    df = data[['Audiobook', 'good_read_score']]
-    
+    df = data[['Audiobook', 'good_read_score', 'original_publish_year']]
+
+    gdf = df[df["original_publish_year"] > 2000]

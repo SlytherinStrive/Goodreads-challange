@@ -264,5 +264,51 @@ def author_alias(adf):
     plt.savefig('author_alias.png')
     # Show the graph
     return plt.show()
-#page_numbers_by_score_for_genres(df)
-author_alias(ag)
+
+#author_alias(ag)
+
+
+def series(df):
+    gdf = df[['good_read_score','avg_rating','series','original_publish_year']]
+    dz = gdf.groupby(gdf['series']).agg({'good_read_score':np.mean})
+    height = [82996, 53269]
+    bars = ('\nIs Series', '\nNot Series')
+    x_pos = np.arange(len(bars))
+    # Create bars and choose color
+    plt.bar(x_pos, height)
+
+    # Add title and axis names
+    plt.title('Average score: Series / No Series\n', fontsize="xx-large")
+    plt.ylabel('Good Read Score Average')
+
+    # Create names on the x axis
+    plt.xticks(x_pos, bars)
+    plt.savefig('series.png')
+    # Show graph
+    plt.show()
+
+series(ag)
+
+
+
+
+#series(df)
+
+# def create_top_5_bottom_5():
+#     df1=pd.read_csv("data/top_50_genres.csv")
+#
+#     dft = df1.head(5)
+#     dfb = df1.tail(5)
+#
+#     dfa = pd.concat([dft,dfb])
+#
+#
+#     plt.figure(figsize=(10,5))
+#     sns.barplot(y='count', x='genres', data = dfa, palette="Paired")
+#     plt.title('Least and most occuring genres', fontsize='20')
+#     plt.xlabel('Genres')
+#     plt.ylabel('Number ')
+#     plt.xticks(rotation=45)
+#     plt.show()
+#     plt.savefig('top_and_bottom.png')
+# create_top_5_bottom_5()

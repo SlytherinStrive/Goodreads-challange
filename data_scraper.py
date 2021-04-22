@@ -1,25 +1,31 @@
-# importing the main libraries
-import requests
-import pandas as pd
-from bs4 import BeautifulSoup
 import numpy as np
+import pandas as pd
+import argparse as ap
 from slytherin import logo_printer
+from bs4 import BeautifulSoup
+import concurrent.futures
+import requests
 from data_restructuring import merge_data_dicts
+from data_preprocessing import *
 
-### to scrape different book lists change the url here.
-URL_SETTING  = "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1"
+###############################################################################################
+###############################################################################################
+### GLOBAL SCRAPER STORAGE AND SETTINGS
+book_list_dict = {1: ("Best books ever (*)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1"),
+                2: ("Books everyone should read atleast once", "https://www.goodreads.com/list/show/264.Books_That_Everyone_Should_Read_At_Least_Once?page=1"),
+                3: ("Books that should be made into movies", "https://www.goodreads.com/list/show/1043.Books_That_Should_Be_Made_Into_Movies?page=1"),
+                4: ("Best books of the 20th century", "https://www.goodreads.com/list/show/6.Best_Books_of_the_20th_Century?page=1")}
 
 
-#############################################################################
-## Functions for getting column data from a book webpage
-"""
-The following book data functions take the format:
+data_setting_dict = {1: ["\nWould you like us to preprocess the books adding addtional data?",  True],}
+URL_SETTING = ("Best books ever (*Used for our analysis)", "https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
+quantity_setting_dict = {"Quantity": None,
+                        "Instances": None}
 
-input : page_soup - a BeautifulSoup object generated from a url of a book page
-
-output: i)  str, int, float, boolean - a perfectly selected piece of data
-        ii) np.nan - a missing piece of data
-"""
+NEW_FILE_NAME = ""
+###############################################################################################
+###############################################################################################
+### SPECIFIC BOOK DETAIL SCRAPING FUNCTIONS
 def get_book_id(page_soup):
     try:
         book_id_section = page_soup.find('div', class_="asyncPreviewButtonContainer")
@@ -130,7 +136,6 @@ def get_awards_count(page_soup):
         print("Oh no get_awards_count failed - assuming 0")
         return 0
 
-
 # Genre of the book
 def get_genres(page_soup):
     try:
@@ -173,52 +178,13 @@ def get_avg(page_soup):
         print("Oh no get avg failed")
         return np.nan
 
-
-#############################################################################
-## Get links from the list of books
-"""
-[Scraping Stage 2 = Hundred link grabber]
-input : list - containing a list of books from https://www.goodreads.com
-
-output: list - containing the 100 books found on that page
-"""
-def hundred_link_grabber(pagination_url):
-    page = requests.get(url=pagination_url)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    links_section = soup.find_all('a', class_="bookTitle", href=True)
-    final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
-    score_divs = soup.find_all('div', style="margin-top: 5px")
-    final_scores = []
-    good_read_score = np.nan
-    score_votes = np.nan
-    for book in score_divs:
-        a_s =  book.find_all('a')
-        a_s_text = [a.get_text() for a in a_s ]
-        a_s_int = [int("".join([i for i in g if i.isnumeric()])) for g in a_s_text]
-        final_scores.append(a_s_int)
-
-    all_pagi_data =[]
-    for link, scores in zip(final_links, final_scores):
-        all_pagi_data.append((link, scores[0], scores[1]))
-
-    len_links = len(all_pagi_data)
-    print(f"Succesfully generated {len_links} from all_pagi_data")
-    return all_pagi_data
-
-#hundred_link_grabber("https://www.goodreads.com/list/show/1.Best_Books_Ever?page=1")
-#############################################################################
-## Get data from individual book pages
-"""
-[Scraping Stage 3 = Get_all_books_data]
-input : str - a url that is a page on from https://www.goodreads.com that contains a list of books
-
-output: list - containing dictionaries with the books data from each url inputted
-
-"""
+###############################################################################################
+###############################################################################################
+### FUNCTIONS FOR MULTIPLE BOOK SCRAPING
 def get_all_books(list_of_urls):
     pd_data =[]
     run_total = len(list_of_urls)
-    for i, book_url in enumerate(list_of_urls):
+    for i, book_url in enumerate(list_of_urls[:1]):
         print(f"Working on url: {book_url}.. {i}/{run_total}")
         request = requests.get(book_url[0])
         page_soup = BeautifulSoup(request.content,'html.parser')
@@ -252,139 +218,248 @@ def get_all_books(list_of_urls):
             "awards" : [awards],
             "award_count": [award_count],
             "place" : [place]}
+        print(f"Succesully gathered: {title} from URL: {book_url}")
         pd_data.append(a_book)
+        print(a_book)
     return pd_data
 
+def hundred_link_grabber(pagination_url):
+    page = requests.get(url=pagination_url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    links_section = soup.find_all('a', class_="bookTitle", href=True)
+    final_links = ["https://www.goodreads.com" + link['href'] for link in links_section]
+    score_divs = soup.find_all('div', style="margin-top: 5px")
+    final_scores = []
+    good_read_score = np.nan
+    score_votes = np.nan
+    for book in score_divs:
+        a_s =  book.find_all('a')
+        a_s_text = [a.get_text() for a in a_s ]
+        a_s_int = [int("".join([i for i in g if i.isnumeric()])) for g in a_s_text]
+        final_scores.append(a_s_int)
 
-#############################################################################
-## Generates the intital links for lists of books
-"""
-[Scraping STAGE 1 = main_scraper]
-args  : start_range - an int between 1-99
-                    the page number you wish to scrape 1-99
+    all_pagi_data =[]
+    for link, scores in zip(final_links, final_scores):
+        all_pagi_data.append((link, scores[0], scores[1]))
 
-kwargs: end_range - defaults to None
-                    if an int is entered between 2-101
-                    the start_range becomes the start of a range
-                    and the end_range becomes the end of the range
+    len_links = len(all_pagi_data)
+    return all_pagi_data
 
-output: list - containing dictionaries with the books data from each url inputted
-
-Scraping stages...
-This runs the other 2 functions in order
-firstly grabs the amount of links as specificed by the inputs
-secondly grabs the data from those books
-
-"""
-def main_scraper(start_range, end_range=None):
+def range_scraper(start_range, end_range):
     """
     quantity is sets of 100 books
     """
     all_urls = []
-    if end_range:
-        for i in range(start_range, end_range+1):
-            try:
-                print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
-                list_url = URL_SETTING[:-1]+str(i)
-                get_url_data = hundred_link_grabber(list_url)
-                all_urls.extend(get_url_data)
-            except:
-                print(f"***FAILED*** to take links on iteration {i}")
-    else:
-    #try:
-        print(f"Attempting to take 100 links. from pagination {start_range}- awaiting success confirmation")
-        list_url = URL_SETTING
-        print(list_url)
+
+    for i in range(start_range, end_range+1):
+        #print(f"Attempting to take 100 links. Iteration: {i}/{end_range} - awaiting success confirmation")
+        list_url = URL_SETTING[1][:-1]+str(i)
         get_url_data = hundred_link_grabber(list_url)
         all_urls.extend(get_url_data)
-    #except:
-        print(f"***FAILED*** to take links on pagination {start_range}")
+        #print(f"***FAILED*** to take links on iteration {i}")
 
+        #print("Failed")
     total_urls = len(all_urls)
-    print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
+    #print(f"Finished geneating pagigination urls. total count is {total_urls} urls")
     get_book_data = get_all_books(all_urls)
     return get_book_data
 
+def genre_column_maker(dataframe):
+    df = dataframe
+    ## Splits all genres into different columns
+    x =df.genres.str.split(',', expand=True)
 
+    y=len(x.columns)
 
+    df[[f"genre_{i}" for i in range(0,y)]] = df.genres.str.split(',', expand=True)
 
-#############################################################################
-## THIS IS TERMINAL INTERFACE FOR SELECTING HOW MUCH TO SCRAPE
-def command_line_interface():
+    ### Returns a dataframe that has booleans for whether data is duplicated across columns
+    is_duplicate = df[[f"genre_{i}" for i in range(0,y)]].apply(pd.Series.duplicated, axis=1).reset_index()
+
+    ## Takes the current dataframe and where the 'is_duplicate' dataframe has True values, it replaces them with np.nan
+    df[[f"genre_{i}" for i in range(0,y)]] = df[[f"genre_{i}" for i in range(0,y)]].where(~is_duplicate, np.nan).fillna('zzzyyyy')
+
+    # A way to change nan values to another value
+    for i in range(y):
+        df[f"genre_{i}"] = df[f"genre_{i}"].str.strip()
+
+    ################################################################################
+    # Find the most common genres
+    ################################################################################
+
+    ## Returns 2 numpy arrays of the unique values and there counts
+    unique, counts  = np.unique(df[[f"genre_{i}" for i in range(0,y)]].values, return_counts=True)
+
+    ##zips the 2 arrays into a dictionary of "Genre": int (Count)
+    d = dict(zip(unique, counts))
+    # Creates a new dataframe from the dictionary with the counts as a column and the genre as the index
+    genre_df = pd.DataFrame.from_dict(d, orient='index',columns=['count'])
+    genre_df.drop(['zzzyyyy'], inplace=True)
+    order_genre = genre_df.sort_values('count', ascending=False)
+    top_50_genres = order_genre.head(50)
+    genre_names = list(top_50_genres.index)
+    #################################################################################
+    # Make columns with genre names and map true or false if book contains that genre
+    #################################################################################
+
+    for genre in genre_names:
+        df[genre] = df['genres'].str.contains(genre)
+        #df[genre] = df[genre].map({True: 'Yes', False: 'No'})
+
+    df.drop([f"genre_{i}" for i in range(0,y)], inplace=True, axis=1)
+
+    print(df.info())
+
+    return df
+
+###############################################################################################
+###############################################################################################
+### COMMAND LINE INTERFACE FUNCTIONS
+
+def start_menu():
     logo_printer()
-    ## Check if user wishes for a single list of books (100) or a range of lists (1-100)
-    check_input = None
-    while check_input == None:
-        print("\n     Welcome to the great reads book scraper for the best books of all time..")
-        print("\n     To begin scraping please set your parameters for the quantity of books you need.")
-        print("\n     Each book list contains 100 books and we can search upto 100 lists.")
-        print("\n     You can scrape a specific list from 100 book lists they offer by entering the relative number.")
-        print("\n     Alternatively if you need upto 10,000 books can enter a range of book list pages from 1-100")
-        print("\n   Would you like to enter a range of book list pages?")
-        user_input = input("\n>>> Enter 'y' for Yes or a 'n' for No:  ")
+    print("Welcome to the good reads book data scraper")
+    print("What type of book are you interested in gathering data on? \n")
+    for k, v in book_list_dict.items():
+        print(f"{k}: {v[0]}")
+    type_pick = None
+    while type_pick == None:
+        ui = input("\n Enter the number of the list you wish to scrape >> ")
+        try:
+            if int(ui) in book_list_dict.keys():
+                type_pick = int(ui)
+        except:
+            print("Invalid option - try again")
+    global URL_SETTING
+    URL_SETTING = book_list_dict[type_pick]
+    global NEW_FILE_NAME
+    NEW_FILE_NAME += "".join([c for c in book_list_dict[type_pick][0] if c.isalnum()])
+    return data_settings()
 
-    ## Validation for two entries: Must be a "y" or "n"
-        ## "y" will ask you to enter a range of book lists,
-        if user_input == "y":
-            start_input = None
-            end_input = None
+def data_settings():
+    print("\n**************************************************")
+    print(" DATA TYPE SETTINGS")
+    print("**************************************************\n")
+    print(f"Before you begin collecting book data on: {URL_SETTING[0]}")
+    print("Please provide your data settings by anwswering the following questions: \n")
 
-            ## Loop that runs until a valid start and end of range has been entered
-            while start_input == None and end_input == None:
-                start_check = input("\n>>> start of range (from 1 to 99):  ")
-                end_check = input("\n>>> Enter end of range from (2 to 100):  ")
-
-                ## Validate the start choice, making sure it is between the correct range
-                if start_check.isnumeric():
-                    if int(start_check) in range(1,100):
-                        start_input = int(start_check)
-                    else:
-                        print("\nYou need to enter a start input between 1 & 99:  ")
-                        start_input = None
-
-                # Validate the end choice, making sure it is between the correct range
-                if end_check.isnumeric():
-                    if int(end_check) in range(2,101):
-                        end_input = int(end_check)
-                    else:
-                        print("\nYou need to enter an end input between 2 & 100:  ")
-                        end_input = None
-
-            ## After all validations is complete, runs the scraper with the desired range of book lists
-            books = main_scraper(start_input, end_input)
-            df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/data15th/scrape_range{start_input}_to_{end_input}.csv', index = False, header=True)
-            break
-
-        # if valid n is selected do the following for a single page
-        elif user_input == "n":
-            page_input = None
-            while page_input == None:
-                page_check = input("\n>>> Enter book list number (from 1 to 100):  ")
-                if page_check.isnumeric():
-                    if int(page_check) in range(1,101):
-                        page_input= int(page_check)
+    for key, value in data_setting_dict.items():
+        setting_pick = None
+        while setting_pick == None:
+            ui = input("\n Enter 'y' for Yes or 'n' for No >> ")
+            try:
+                if ui.lower() == "y":
+                    setting_pick = True
+                elif ui.lower() == "n":
+                    setting_pick = False
                 else:
-                    page_input = None
+                    print("Invalid option - try again")
+            except:
+                print("Invalid option - try again")
+        data_setting_dict[key] = [value[0], setting_pick]
 
-            # scrape data from the single page
-            books = main_scraper(page_input)
-            df = pd.DataFrame(merge_data_dicts(books))
-            df.to_csv(f'data/data15th/scrape_pages_{page_input}.csv', index = False, header=True)
-            break
+    print("Thanks for confirming the settings ")
+    return quantity_setter()
+
+def quantity_setter():
+    print("\n**************************************************")
+    print(" BOOK QUANTIY SETTINGS")
+    print("**************************************************\n")
+    print(f"We detect you can gather information on upto 10,000 books with the '{URL_SETTING[0]}' list.")
+    print("You can scrape in multiples of 100. Please select how many books you would like to get data on.")
+    print("Please note you must select a multiple of 100 e.g. 500, 600 700... 9000, 9900, 10000")
+    print("\n How many would you like to get?")
+
+    quantity_pick = None
+    scraper_instance_pick = None
+
+    while quantity_pick == None:
+        ui = input("\n Enter the number of books from 100 to 10000 >> ")
+        try:
+            if int(ui)%100 == 0:
+                if int(ui) >= 100 and int(ui) <=10000:
+                    quantity_pick = int(ui)
+                else:
+                    print("Invalid quanity, try again")
+            else:
+                print("Invalid quanity, try again")
+        except:
+            print("xInvalid quantity - try again")
+    print("\n Please select the maximum instances of the scraper you wish to run.")
+    print("The more you run the faster data will acquire. A maximum of 20 can be entered.")
+    print("The higher the chosen quantity of scrapers the greater decrease in system performance.")
+    print("There is also a possibility that the host website may prevent you from making too many requests.")
+    while scraper_instance_pick == None:
+        scraper_max = min(quantity_pick / 100, 20)
+        ui = input("\n Enter the quantiy of scrapers to run (min:1, max:20) >> ")
+        try:
+            if int(ui) >=1 and int(ui)<=20:
+                scraper_instance_pick = int(ui)
+            else:
+                print("Invalid quantity, try again")
+        except:
+            print("Invalid quantity - try again")
+
+    quantity_setting_dict["Quantity"] = quantity_pick
+    quantity_setting_dict["Instances"] = scraper_instance_pick
+    global NEW_FILE_NAME
+    NEW_FILE_NAME += "_"+str(quantity_pick)+"_"+str(scraper_instance_pick)
+
+    return begin_scraper()
+
+def begin_scraper():
+    pagination_total = int(quantity_setting_dict['Quantity'] / 100)
+    scraper_total = quantity_setting_dict['Instances']
+    pages_per_process = []
+    processes = []
+    if scraper_total > 1:
+        if pagination_total % scraper_total == 0:
+            split = int(pagination_total / scraper_total)
+
+            pages_per_process = [(i, i+split-1) for i in range(1, pagination_total, split)]
+
         else:
-            print("\n You must enter a 'y' or a 'n' to continue")
-            user_input = None
+            split = int(pagination_total // scraper_total)
+            remainder = int(pagination_total % scraper_total)
+            pages_per_process = [(i, i+split-1) for i in range(1, pagination_total-remainder, split)]
+            pages_per_process[-1] = (pages_per_process[-1][0], pagination_total)
+
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        scraper_future_results = [executor.submit(range_scraper,process[0], process[1]) for process in pages_per_process]
+
+    all_scraper_results =[]
+
+    for scraper in scraper_future_results:
+        all_scraper_results.extend(scraper.result())
+
+
+    # backup split data
+
+    # preprocessing
+    return run_preprocessor(all_scraper_results)
+
+
+def run_preprocessor(results):
+
+    if data_setting_dict[1][1] == True:
+        all_books = merge_data_dicts(results)
+        df = pd.DataFrame(all_books)
+        df = genre_column_maker(df)
+        df.to_csv(f"data/{NEW_FILE_NAME}_no_pp.csv")
+        df = preprocessing(f"data/{NEW_FILE_NAME}_no_pp.csv")
+        df.to_csv(f"data/{NEW_FILE_NAME}_with_pp.csv")
+    print(f"Thankyou succesfully sraped and saved to data/{NEW_FILE_NAME}_with_pp.csv")
+    print("Closing scraper")
 
 
 
-### RUNS THE CLI
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
-    command_line_interface()
-
-
-### Helper functions
-def debugger_help(book_url):
-    request = requests.get(book_url)
-    page_soup = BeautifulSoup(request.content,'html.parser')
-    return page_soup
+    start_menu()
